@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { DM_Sans, Geist, Geist_Mono, Google_Sans } from "next/font/google";
 import { Toaster } from "@/components/ui/toast";
+import { Providers } from "@/lib/providers";
 import "./globals.css";
 
 const googlesans = Google_Sans({
@@ -29,8 +30,10 @@ export default function RootLayout({
       className={`${dmsans.className} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        {children}
-        <Toaster />
+        <Providers>
+          {children}
+          <Toaster />
+        </Providers>
       </body>
     </html>
   );
