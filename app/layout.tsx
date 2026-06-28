@@ -27,7 +27,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${dmsans.className} h-full antialiased`}
+      className={`${googlesans.className} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <Providers>
