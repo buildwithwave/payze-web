@@ -19,11 +19,11 @@ import { cn } from "@/lib/utils";
 
 const mainNav = [
   { label: "Dashboard", href: "/dashboard", icon: Home01Icon },
-  { label: "Analytics", href: "/dashboard/analytics", icon: Analytics02Icon },
+  { label: "Payments", href: "/dashboard/payments", icon: CreditCardIcon },
   { label: "Stores", href: "/dashboard/stores", icon: Store01Icon },
   { label: "Products", href: "/dashboard/products", icon: Package01Icon },
   { label: "Invoices", href: "/dashboard/invoices", icon: Invoice01Icon },
-  { label: "Payments", href: "/dashboard/payments", icon: CreditCardIcon },
+  { label: "Analytics", href: "/dashboard/analytics", icon: Analytics02Icon },
 ];
 
 const bottomNav = [
@@ -71,13 +71,13 @@ export function Sidebar() {
       <div className="px-3 mb-4">
         <Link href="/dashboard" className="flex items-center gap-1.5">
           <Image src="/logo.svg" alt="Payzee" width={26} height={28} />
-          <span className="text-2xl font-semibold text-primary tracking-tight">Payzee</span>
+          <span className="text-2xl font-medium text-primary tracking-tight">Payze</span>
         </Link>
       </div>
 
       {/* Business Switcher */}
       <button className="flex items-center gap-2  mb-4 mx-1 px-3 w-full  py-2.5 rounded-lg hover:bg-muted/50 transition-colors text-left cursor-pointer">
-        <div className="flex items-center justify-center size-5 rounded bg-black text-primary text-sm font-semibold shrink-0">
+        <div className="flex items-center justify-center size-5 rounded bg-gray-300 text-primary text-sm font-semibold shrink-0">
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium text-gray-600 truncate">Onigbinde Stores</p>
