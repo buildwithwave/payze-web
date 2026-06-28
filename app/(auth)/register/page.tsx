@@ -6,10 +6,42 @@ import { AnimatePresence, motion } from "motion/react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { useCheckEmail, useRegister } from "@/hooks/use-auth";
+import { toast } from "@/components/ui/toast";
+import { PasswordStrength } from "@/components/ui/password-strength";
 
 export default function RegisterPage() {
   const [step, setStep] = useState<1 | 2>(1);
   const [email, setEmail] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [businessName, setBusinessName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
+
+  const checkEmail = useCheckEmail();
+  const register = useRegister();
+
+  const handleEmailSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    checkEmail.mutate(
+      { email },
+      {
+        onSuccess: (res) => {
+          if (res.data.exists) {
+            toast.error("Email already registered", "Try logging in instead");
+          } else {
+            setStep(2);
+          }
+        },
+      }
+    );
+  };
+
+  const handleRegisterSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    register.mutate({ email, firstName, lastName, businessName, phone, password });
+  };
 
   return (
     <div className="flex flex-1 items-center justify-center px-6">
@@ -33,13 +65,7 @@ export default function RegisterPage() {
                 </p>
               </div>
 
-              <form
-                className="space-y-4"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  if (email.trim()) setStep(2);
-                }}
-              >
+              <form action="#" onSubmit={handleEmailSubmit} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="email">Business email</Label>
                   <Input
@@ -53,7 +79,11 @@ export default function RegisterPage() {
                   />
                 </div>
 
-                <Button type="submit" className="w-full">
+                <Button
+                  type="submit"
+                  className="w-full"
+                  loading={checkEmail.isPending}
+                >
                   Continue
                 </Button>
               </form>
@@ -95,7 +125,7 @@ export default function RegisterPage() {
                 </p>
               </div>
 
-              <form className="space-y-4">
+              <form action="#" onSubmit={handleRegisterSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-2">
                     <Label htmlFor="firstName">First name</Label>
@@ -103,6 +133,9 @@ export default function RegisterPage() {
                       id="firstName"
                       className="h-10"
                       placeholder="First name"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      required
                     />
                   </div>
                   <div className="space-y-2">
@@ -111,6 +144,9 @@ export default function RegisterPage() {
                       id="lastName"
                       className="h-10"
                       placeholder="Last name"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      required
                     />
                   </div>
                 </div>
@@ -121,6 +157,9 @@ export default function RegisterPage() {
                     id="businessName"
                     className="h-10"
                     placeholder="e.g. Acme Ltd"
+                    value={businessName}
+                    onChange={(e) => setBusinessName(e.target.value)}
+                    required
                   />
                 </div>
 
@@ -131,6 +170,9 @@ export default function RegisterPage() {
                     type="tel"
                     className="h-10"
                     placeholder="+234 801 234 5678"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    required
                   />
                 </div>
 
@@ -141,10 +183,19 @@ export default function RegisterPage() {
                     type="password"
                     className="h-10"
                     placeholder="Min. 8 characters"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    minLength={8}
+                    required
                   />
+                  <PasswordStrength password={password} />
                 </div>
 
-                <Button type="submit" className="w-full">
+                <Button
+                  type="submit"
+                  className="w-full"
+                  loading={register.isPending}
+                >
                   Create account
                 </Button>
 

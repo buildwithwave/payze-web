@@ -1,12 +1,17 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { authService, LoginPayload, RegisterPayload, RegisterEmailPayload } from "@/services/auth";
+import {
+  authService,
+  LoginPayload,
+  RegisterPayload,
+  CheckEmailPayload,
+} from "@/services/auth";
 import { toast } from "@/components/ui/toast";
 import { AxiosError } from "axios";
 
 function getErrorMessage(error: unknown): string {
   if (error instanceof AxiosError) {
-    return error.response?.data?.error || error.message;
+    return error.response?.data?.message || error.response?.data?.error || error.message;
   }
   return "Something went wrong";
 }
@@ -17,7 +22,8 @@ export function useLogin() {
   return useMutation({
     mutationFn: (data: LoginPayload) => authService.login(data),
     onSuccess: (res) => {
-      localStorage.setItem("token", res.data.token);
+      const { token } = res.data;
+      if (token) localStorage.setItem("token", token);
       toast.success("Welcome back!");
       router.push("/dashboard");
     },
@@ -29,7 +35,7 @@ export function useLogin() {
 
 export function useCheckEmail() {
   return useMutation({
-    mutationFn: (data: RegisterEmailPayload) => authService.checkEmail(data),
+    mutationFn: (data: CheckEmailPayload) => authService.checkEmail(data),
     onError: (error) => {
       toast.error("Email check failed", getErrorMessage(error));
     },
@@ -42,7 +48,8 @@ export function useRegister() {
   return useMutation({
     mutationFn: (data: RegisterPayload) => authService.register(data),
     onSuccess: (res) => {
-      localStorage.setItem("token", res.data.token);
+      const { token } = res.data;
+      if (token) localStorage.setItem("token", token);
       toast.success("Account created!");
       router.push("/dashboard");
     },
@@ -52,14 +59,11 @@ export function useRegister() {
   });
 }
 
-export function useForgotPassword() {
-  return useMutation({
-    mutationFn: (email: string) => authService.forgotPassword(email),
-    onSuccess: () => {
-      toast.success("Reset link sent", "Check your email");
-    },
-    onError: (error) => {
-      toast.error("Request failed", getErrorMessage(error));
-    },
+export function useUser() {
+  return useQuery({
+    queryKey: ["user", "me"],
+    queryFn: () => authService.getMe().then((res) => res.data),
+    enabled: typeof window !== "undefined" && !!localStorage.getItem("token"),
+    retry: false,
   });
 }

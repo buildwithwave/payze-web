@@ -5,8 +5,12 @@ export interface LoginPayload {
   password: string;
 }
 
-export interface RegisterEmailPayload {
+export interface CheckEmailPayload {
   email: string;
+}
+
+export interface CheckEmailResponse {
+  exists: boolean;
 }
 
 export interface RegisterPayload {
@@ -18,30 +22,25 @@ export interface RegisterPayload {
   password: string;
 }
 
-export interface AuthResponse {
-  user: {
-    id: string;
-    email: string;
-    firstName: string;
-    lastName: string;
-    businessName: string;
-  };
-  token: string;
+export interface User {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  businessName: string;
+  phone: string;
 }
 
 export const authService = {
   login: (data: LoginPayload) =>
-    api.post<AuthResponse>("/auth/login", data),
+    api.post("/auth/login", data),
 
-  checkEmail: (data: RegisterEmailPayload) =>
-    api.post("/auth/register/email", data),
+  checkEmail: (data: CheckEmailPayload) =>
+    api.post<CheckEmailResponse>("/auth/check-email", data),
 
   register: (data: RegisterPayload) =>
-    api.post<AuthResponse>("/auth/register", data),
+    api.post("/auth/register", data),
 
-  forgotPassword: (email: string) =>
-    api.post("/auth/forgot-password", { email }),
-
-  resetPassword: (token: string, password: string) =>
-    api.post("/auth/reset-password", { token, password }),
+  getMe: () =>
+    api.get<User>("/auth/users/me"),
 };

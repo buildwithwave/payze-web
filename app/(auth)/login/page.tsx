@@ -1,9 +1,22 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { useLogin } from "@/hooks/use-auth";
 
 export default function LoginPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const login = useLogin();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    login.mutate({ email, password });
+  };
+
   return (
     <div className="flex flex-1 items-center justify-center px-6">
       <div className="w-full max-w-sm space-y-6">
@@ -16,13 +29,16 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <form className="space-y-4">
+        <form action="#" onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email address</Label>
             <Input
               id="email"
               type="email"
               className="h-10"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
             />
           </div>
 
@@ -33,6 +49,9 @@ export default function LoginPage() {
               type="password"
               className="h-10 placeholder:text-muted-foreground placeholder:text-sm"
               placeholder="Password (min. of 8 characters)"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
             />
             <Link
               href="/forgot-password"
@@ -42,7 +61,11 @@ export default function LoginPage() {
             </Link>
           </div>
 
-          <Button type="submit" className="w-full">
+          <Button
+            type="submit"
+            className="w-full"
+            loading={login.isPending}
+          >
             Log in
           </Button>
         </form>
