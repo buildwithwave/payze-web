@@ -28,7 +28,7 @@ export function WalletCard() {
     <div className="mt-6">
       {/* Currency badge */}
       <div className="mb-4">
-        <div className="border border-border px-2.5 py-1 rounded-full w-fit flex items-center gap-1.5">
+        <div className="border border-border pl-2 pr-3 py-1 rounded-full w-fit flex items-center gap-1.5">
           <div className="size-6 rounded-full overflow-hidden shrink-0">
             <Image
               src="/flags/ng.png"
