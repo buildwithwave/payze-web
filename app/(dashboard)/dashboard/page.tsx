@@ -1,3 +1,41 @@
+"use client";
+
+import { useUser } from "@/hooks/use-auth";
+import { WalletCard } from "@/components/dashboard/wallet-card";
+import { StatsCards } from "@/components/dashboard/stats-cards";
+import { SalesChart } from "@/components/dashboard/sales-chart";
+
+function getGreeting() {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good morning";
+  if (hour < 17) return "Good afternoon";
+  return "Good evening";
+}
+
 export default function DashboardPage() {
-  return <div></div>;
+  const { data: user } = useUser();
+  const firstName = user?.firstName || "there";
+
+  return (
+    <div className="p-8">
+      <div className="w-full flex items-center justify-between">
+        <div className="space-y-1">
+          <h1 className="text-[22px] font-semibold tracking-tight">
+            {getGreeting()}, {firstName}.
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Here&apos;s how your business is doing today.
+          </p>
+        </div>
+      </div>
+
+<div className="grid grid-cols-2 mt-4">
+      <WalletCard />
+
+</div>
+
+<StatsCards />
+<SalesChart />
+    </div>
+  );
 }

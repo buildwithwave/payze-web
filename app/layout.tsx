@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DM_Sans, Geist, Geist_Mono, Google_Sans } from "next/font/google";
+import { DM_Sans, Geist, Geist_Mono, Google_Sans, Space_Grotesk } from "next/font/google";
 import { Toaster } from "@/components/ui/toast";
 import { Providers } from "@/lib/providers";
 import "./globals.css";
@@ -12,6 +12,12 @@ const googlesans = Google_Sans({
 const dmsans = DM_Sans({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-currency",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -27,9 +33,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${googlesans.className} h-full antialiased`}
+      className={`${googlesans.className} ${spaceGrotesk.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col ">
         <Providers>
           {children}
           <Toaster />

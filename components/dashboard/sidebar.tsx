@@ -65,7 +65,7 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="flex flex-col justify-between w-[18%] min-w-50 h-screen py-6 px-3">
+    <aside className="flex flex-col justify-between w-[18%] min-w-50 h-screen py-6 px-3 overflow-hidden shrink-0">
       {/* Top */}
       <div>
       <div className="px-3 mb-4">
