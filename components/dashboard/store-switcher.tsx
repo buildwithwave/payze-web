@@ -34,15 +34,13 @@ export function StoreSwitcher() {
     <div ref={ref} className="relative mx-1 mb-4">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-3 px-3 w-full py-2.5 rounded-lg bg-gray-200 hover:bg-black/5 transition-colors text-left cursor-pointer outline-none"
+        className="flex items-center gap-3 px-3 w-full py-2.5 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors text-left cursor-pointer outline-none"
       >
-        <div className="flex items-center justify-center size-9 rounded-full bg-foreground/10 text-[10px] font-bold text-foreground shrink-0">
-        </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium text-foreground truncate">
             {activeStore.name}
           </p>
-          <p className="text-xs /70">ogbstores@gmail.com</p>
+          <p className="text-xs text-muted-foreground">ogbstores@gmail.com</p>
         </div>
         <HugeiconsIcon
           icon={UnfoldMoreIcon}
@@ -60,7 +58,6 @@ export function StoreSwitcher() {
             transition={{ duration: 0.15, ease: "easeOut" }}
             className="absolute left-0 right-0 top-full mt-1 z-50 rounded-lg border border-border bg-white p-3 flex flex-col min-h-44"
           >
-           
             <div className="flex-1 space-y-0.5">
               {stores.map((store) => {
                 const selected = store.id === activeStore.id;

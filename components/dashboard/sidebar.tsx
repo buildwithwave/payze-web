@@ -45,9 +45,9 @@ function NavItem({
     <Link
       href={href}
       className={cn(
-        "group relative flex items-center gap-2.5 px-3 py-2 rounded-lg text-[15px] font-medium transition-all",
+        "group relative flex items-center gap-6 px-3 py-2 rounded-lg text-[15px] transition-all",
         active
-          ? "bg-primary text-white"
+          ? "bg-primary text-white font-medium"
           : "text-muted-foreground hover:text-foreground hover:bg-black/5",
       )}
     >
@@ -61,7 +61,7 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="flex flex-col justify-between w-72 min-w-40 h-screen py-6 px-3 overflow-hidden shrink-0">
+    <aside className="flex flex-col justify-between w-80 h-screen py-6 px-3 overflow-hidden shrink-0">
       {/* Top */}
       <div>
         <div className="px-3 mb-4">
