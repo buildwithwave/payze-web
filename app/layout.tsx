@@ -1,10 +1,17 @@
 import type { Metadata } from "next";
-import { DM_Sans, Geist, Geist_Mono, Google_Sans, Space_Grotesk } from "next/font/google";
+import {
+  DM_Sans,
+  Geist,
+  Geist_Mono,
+  Google_Sans,
+  Inter,
+  Space_Grotesk,
+} from "next/font/google";
 import { Toaster } from "@/components/ui/toast";
 import { Providers } from "@/lib/providers";
 import "./globals.css";
 
-const googlesans = Google_Sans({
+const inter = Inter({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
@@ -33,7 +40,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${googlesans.className} ${spaceGrotesk.variable} h-full antialiased`}
+      className={`${inter.className} ${spaceGrotesk.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col ">
         <Providers>

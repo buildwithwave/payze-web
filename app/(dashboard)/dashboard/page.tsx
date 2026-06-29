@@ -29,13 +29,12 @@ export default function DashboardPage() {
         </div>
       </div>
 
-<div className="grid grid-cols-2 mt-4">
-      <WalletCard />
+      <div className="grid grid-cols-2 mt-4">
+        <WalletCard />
+      </div>
 
-</div>
-
-<StatsCards />
-<SalesChart />
+      <StatsCards />
+      <SalesChart />
     </div>
   );
 }

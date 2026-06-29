@@ -48,14 +48,10 @@ function NavItem({
         "group relative flex items-center gap-2.5 px-3 py-2 rounded-lg text-[15px] font-medium transition-all",
         active
           ? "bg-primary text-white"
-          : "text-muted-foreground hover:text-foreground hover:bg-black/5"
+          : "text-muted-foreground hover:text-foreground hover:bg-black/5",
       )}
     >
-      <HugeiconsIcon
-        icon={icon}
-        size={18}
-        strokeWidth={active ? 2.5 : 1.5}
-      />
+      <HugeiconsIcon icon={icon} size={18} strokeWidth={active ? 2.5 : 1.5} />
       {label}
     </Link>
   );
@@ -65,30 +61,32 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="flex flex-col justify-between w-[18%] min-w-50 h-screen py-6 px-3 overflow-hidden shrink-0">
+    <aside className="flex flex-col justify-between w-72 min-w-40 h-screen py-6 px-3 overflow-hidden shrink-0">
       {/* Top */}
       <div>
-      <div className="px-3 mb-4">
-        <Link href="/dashboard" className="flex items-center gap-1.5">
-          <Image src="/logo.svg" alt="Payzee" width={26} height={28} />
-          <span className="text-[22px] font-medium text-primary tracking-tight">Payze</span>
-        </Link>
-      </div>
+        <div className="px-3 mb-4">
+          <Link href="/dashboard" className="flex items-center gap-1.5">
+            <Image src="/logo.svg" alt="Payzee" width={26} height={28} />
+            <span className="text-[22px] font-medium text-primary tracking-tight">
+              Payze
+            </span>
+          </Link>
+        </div>
 
-      <StoreSwitcher />
+        <StoreSwitcher />
 
-      {/* Main Nav */}
-      <nav className="flex flex-col gap-0.5 px-1 mt-6">
-        {mainNav.map(({ label, href, icon }) => (
-          <NavItem
-            key={href}
-            href={href}
-            icon={icon}
-            label={label}
-            active={pathname === href}
-          />
-        ))}
-      </nav>
+        {/* Main Nav */}
+        <nav className="flex flex-col gap-0.5 px-1 mt-6">
+          {mainNav.map(({ label, href, icon }) => (
+            <NavItem
+              key={href}
+              href={href}
+              icon={icon}
+              label={label}
+              active={pathname === href}
+            />
+          ))}
+        </nav>
       </div>
 
       {/* Bottom Nav */}
