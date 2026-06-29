@@ -45,7 +45,7 @@ function NavItem({
     <Link
       href={href}
       className={cn(
-        "group relative flex items-center gap-6 px-3 py-2 rounded-lg text-[15px] transition-all",
+        "group relative flex items-center gap-6 gap-x-3 px-3 py-2 rounded-lg text-[15px] transition-all",
         active
           ? "bg-primary text-white font-medium"
           : "text-muted-foreground hover:text-foreground hover:bg-black/5",
@@ -76,7 +76,7 @@ export function Sidebar() {
         <StoreSwitcher />
 
         {/* Main Nav */}
-        <nav className="flex flex-col gap-0.5 px-1 mt-6">
+        <nav className="flex flex-col gap-1 px-1 mt-6">
           {mainNav.map(({ label, href, icon }) => (
             <NavItem
               key={href}
