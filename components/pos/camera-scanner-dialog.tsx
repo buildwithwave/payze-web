@@ -57,17 +57,14 @@ function ScannerView({
   const lastScanRef = useRef<{ code: string; at: number }>({ code: "", at: 0 });
   const [status, setStatus] = useState<
     "starting" | "scanning" | "unsupported" | "denied"
-  >("starting");
+  >(() => (window.BarcodeDetector ? "starting" : "unsupported"));
   const [lastResult, setLastResult] = useState<{
     ok: boolean;
     label: string;
   } | null>(null);
 
   useEffect(() => {
-    if (!window.BarcodeDetector) {
-      setStatus("unsupported");
-      return;
-    }
+    if (!window.BarcodeDetector) return;
 
     let cancelled = false;
     let stream: MediaStream | null = null;
@@ -158,7 +155,6 @@ function ScannerView({
   return (
     <div className="mt-4">
       <div className="relative overflow-hidden rounded-xl bg-gray-950">
-        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
         <video
           ref={videoRef}
           playsInline
