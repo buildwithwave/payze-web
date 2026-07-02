@@ -2,6 +2,7 @@
 
 import { useUser } from "@/hooks/use-auth";
 import { WalletCard } from "@/components/dashboard/wallet-card";
+import { RecentTransactions } from "@/components/dashboard/recent-transactions";
 import { StatsCards } from "@/components/dashboard/stats-cards";
 import { SalesChart } from "@/components/dashboard/sales-chart";
 
@@ -31,6 +32,8 @@ export default function DashboardPage() {
         <div className="mt-4">
           <WalletCard />
         </div>
+
+        <RecentTransactions />
 
         {/* <StatsCards />
         <SalesChart /> */}
