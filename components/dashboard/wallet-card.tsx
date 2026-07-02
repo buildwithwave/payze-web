@@ -9,6 +9,7 @@ import {
   Copy01Icon,
   MoneySend01Icon,
 } from "@hugeicons/core-free-icons";
+import { ArrowUpRightIcon } from "@phosphor-icons/react";
 
 export function WalletCard() {
   const [visible, setVisible] = useState(true);
@@ -28,14 +29,14 @@ export function WalletCard() {
     <div className="mt-6">
       {/* Currency badge */}
       <div className="mb-4">
-        <div className="border border-border pl-2 pr-3 py-1 rounded-full w-fit flex items-center gap-1.5">
+        <div className="border border-border pl-1.5 pr-3 py-1 rounded-full w-fit flex items-center gap-2">
           <div className=" overflow-hidden shrink-0 relative">
             <Image
-              src="/flags/ng2.png"
+              src="https://purecatamphetamine.github.io/country-flag-icons/1x1/NG.svg"
               alt="NGN"
-              height={16}
-              width={16}
-              className=""
+              width={32}
+              height={32}
+              className="rounded-full h-5 w-5"
             />
           </div>
           <p className="text-xs font-medium text-muted-foreground">
@@ -45,11 +46,11 @@ export function WalletCard() {
       </div>
 
       {/* Balance */}
-      <div className="mb-4 flex items-center gap-3">
+      <div className="mb-2 flex items-center gap-2">
         <div className="flex items-baseline gap-1">
           <span className="text-lg font-medium text-muted-foreground">₦</span>
           <h2 className="text-4xl font-bold tracking-tight text-foreground">
-            {visible ? balance : "••••••••"}
+            {visible ? balance : "****.••"}
           </h2>
         </div>
 
@@ -71,7 +72,7 @@ export function WalletCard() {
           onClick={handleCopy}
           className="flex items-center gap-1.5 group cursor-pointer"
         >
-          <span className="text-sm font-mono text-foreground">
+          <span className="text-sm font-mono text-[#1f1f1f] font-semibold">
             {accountNumber}
           </span>
           <span className="text-muted-foreground/30">•</span>
@@ -87,22 +88,17 @@ export function WalletCard() {
             </span>
           )}
         </button>
+      </div>
 
-        {/* <button className="flex items-center gap-2 px-4 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors cursor-pointer">
-          Withdraw
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            className="size-5"
-          >
-            <path
-              fillRule="evenodd"
-              d="M5.22 14.78a.75.75 0 0 0 1.06 0l7.22-7.22v5.69a.75.75 0 0 0 1.5 0v-7.5a.75.75 0 0 0-.75-.75h-7.5a.75.75 0 0 0 0 1.5h5.69l-7.22 7.22a.75.75 0 0 0 0 1.06Z"
-              clipRule="evenodd"
-            />
-          </svg>
-        </button> */}
+      <div className="flex items-center gap-4 mt-4">
+        <button className="bg-gray-50 flex flex-col gap-2 p-3 rounded-2xl h-40 w-52 justify-between">
+          <div className="bg-gray-100 rounded-full p-3 w-fit">
+            <ArrowUpRightIcon size={16} className="text-gray-700" />
+          </div>
+          <p className="font-medium text-left px-2 tracking-tight">
+            Send money
+          </p>
+        </button>
       </div>
     </div>
   );
