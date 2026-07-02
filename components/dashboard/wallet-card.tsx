@@ -7,9 +7,11 @@ import {
   ViewIcon,
   EyeOffIcon,
   Copy01Icon,
+  Tick01Icon,
+  QrCode01Icon,
   MoneySend01Icon,
 } from "@hugeicons/core-free-icons";
-import { ArrowUpRightIcon } from "@phosphor-icons/react";
+import { ArrowUpRightIcon, TrendUpIcon } from "@phosphor-icons/react";
 
 export function WalletCard() {
   const [visible, setVisible] = useState(true);
@@ -18,6 +20,7 @@ export function WalletCard() {
   const balance = "2,450,000.00";
   const accountNumber = "8012345678";
   const bankName = "Nomba MFB";
+  const weekTotal = "639,000";
 
   const handleCopy = () => {
     navigator.clipboard.writeText(accountNumber);
@@ -26,11 +29,11 @@ export function WalletCard() {
   };
 
   return (
-    <div className="mt-6">
+    <div className="w-full">
       {/* Currency badge */}
       <div className="mb-4">
         <div className="border border-border pl-1.5 pr-3 py-1 rounded-full w-fit flex items-center gap-2">
-          <div className=" overflow-hidden shrink-0 relative">
+          <div className="overflow-hidden shrink-0 relative">
             <Image
               src="https://purecatamphetamine.github.io/country-flag-icons/1x1/NG.svg"
               alt="NGN"
@@ -46,7 +49,7 @@ export function WalletCard() {
       </div>
 
       {/* Balance */}
-      <div className="mb-2 flex items-center gap-2">
+      <div className="mb-4 flex items-center gap-2">
         <div className="flex items-baseline gap-1">
           <span className="text-lg font-medium text-muted-foreground">₦</span>
           <h2 className="text-4xl font-bold tracking-tight text-foreground">
@@ -56,7 +59,7 @@ export function WalletCard() {
 
         <button
           onClick={() => setVisible(!visible)}
-          className="p-1.5 rounded-full hover:bg-muted transition-colors cursor-pointer"
+          className="p-1.5 rounded-full hover:bg-muted transition-colors"
         >
           <HugeiconsIcon
             icon={visible ? ViewIcon : EyeOffIcon}
@@ -66,37 +69,110 @@ export function WalletCard() {
         </button>
       </div>
 
-      {/* Account info + Actions */}
-      <div className="flex items-center justify-between">
-        <button
-          onClick={handleCopy}
-          className="flex items-center gap-1.5 group cursor-pointer"
-        >
-          <span className="text-sm font-mono text-[#1f1f1f] font-semibold">
+      {/* Account info — one-tap copy, instant feedback */}
+      <button
+        onClick={handleCopy}
+        className="w-full flex items-center justify-between gap-3 rounded-2xl bg-gray-50 px-4 py-3 text-left transition-colors hover:bg-gray-100 active:scale-[0.99]"
+      >
+        <div className="min-w-0">
+          <p className="font-mono text-base font-semibold tracking-tight text-foreground truncate">
             {accountNumber}
-          </span>
-          <span className="text-muted-foreground/30">•</span>
-          <span className="text-xs text-muted-foreground">{bankName}</span>
-          <HugeiconsIcon
-            icon={Copy01Icon}
-            size={12}
-            className="text-muted-foreground/50 group-hover:text-muted-foreground transition-colors"
+          </p>
+          <p className="text-xs text-muted-foreground truncate">{bankName}</p>
+        </div>
+        <div
+          className={`flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs font-medium transition-colors ${
+            copied
+              ? "bg-emerald-100 text-emerald-700"
+              : "bg-white text-muted-foreground"
+          }`}
+        >
+          <HugeiconsIcon icon={copied ? Tick01Icon : Copy01Icon} size={13} />
+          {copied ? "Copied" : "Copy"}
+        </div>
+      </button>
+
+      {/* Weekly earnings — just the number and a mood, no day-by-day detail.
+          A quiet ascending-coin motif stands in for a chart. */}
+      <div className="relative mt-3 overflow-hidden rounded-2xl border border-border p-4">
+        <svg
+          className="pointer-events-none absolute -right-3 -bottom-4 opacity-[0.06]"
+          width="120"
+          height="90"
+          viewBox="0 0 120 90"
+          fill="none"
+        >
+          <circle
+            cx="20"
+            cy="70"
+            r="16"
+            fill="currentColor"
+            className="text-blue-600"
           />
-          {copied && (
-            <span className="text-[10px] text-emerald-500 font-medium">
-              Copied
-            </span>
-          )}
-        </button>
+          <circle
+            cx="55"
+            cy="55"
+            r="20"
+            fill="currentColor"
+            className="text-blue-600"
+          />
+          <circle
+            cx="95"
+            cy="32"
+            r="24"
+            fill="currentColor"
+            className="text-blue-600"
+          />
+        </svg>
+
+        <div className="relative flex items-center justify-between">
+          <div>
+            <p className="text-xs font-medium text-muted-foreground">
+              Earned this week
+            </p>
+            <p className="mt-0.5 text-2xl font-bold tracking-tight text-foreground">
+              ₦{weekTotal}
+            </p>
+          </div>
+          <div className="flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-600">
+            <TrendUpIcon size={12} weight="bold" />
+            18%
+          </div>
+        </div>
       </div>
 
-      <div className="flex items-center gap-4 mt-4">
-        <button className="bg-gray-50 flex flex-col gap-2 p-3 rounded-2xl h-40 w-52 justify-between">
-          <div className="bg-gray-100 rounded-full p-3 w-fit">
-            <ArrowUpRightIcon size={16} className="text-gray-700" />
+      {/* Transaction actions */}
+      <div className="mt-3 grid grid-cols-3 gap-3 h-96">
+        <button className="flex h-full flex-col justify-between rounded-4xl bg-blue-600 p-4 text-left transition-colors hover:bg-blue-700 active:scale-[0.98]">
+          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/15">
+            <HugeiconsIcon
+              icon={QrCode01Icon}
+              size={24}
+              className="text-white"
+            />
           </div>
-          <p className="font-medium text-left px-2 tracking-tight">
-            Send money
+          <p className="font-semibold tracking-tight text-white">Receive</p>
+        </button>
+
+        <button className="flex h-full flex-col justify-between rounded-4xl bg-gray-50 p-4 text-left transition-colors hover:bg-gray-100 active:scale-[0.98]">
+          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
+            <ArrowUpRightIcon size={24} className="text-gray-700" />
+          </div>
+          <p className="text-lg font-semibold tracking-tight text-foreground">
+            Send
+          </p>
+        </button>
+
+        <button className="flex h-full flex-col justify-between rounded-4xl bg-gray-50 p-4 text-left transition-colors hover:bg-gray-100 active:scale-[0.98]">
+          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
+            <HugeiconsIcon
+              icon={MoneySend01Icon}
+              size={24}
+              className="text-gray-700"
+            />
+          </div>
+          <p className="font-semibold tracking-tight text-foreground">
+            Withdraw
           </p>
         </button>
       </div>

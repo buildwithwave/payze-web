@@ -18,7 +18,7 @@ export default function DashboardPage() {
 
   return (
     <div className="p-8">
-      <div className="w-full flex items-center justify-between">
+      <div className="mx-auto w-full max-w-6xl">
         <div>
           <h1 className="text-[22px] font-semibold tracking-tight">
             {getGreeting()}, {firstName}.
@@ -27,16 +27,14 @@ export default function DashboardPage() {
             Here&apos;s how your business is doing today.
           </p>
         </div>
+
+        <div className="mt-4">
+          <WalletCard />
+        </div>
+
+        {/* <StatsCards />
+        <SalesChart /> */}
       </div>
-
-      <div className="grid grid-cols-2 mt-4">
-        <WalletCard />
-      </div>
-
-      
-
-      {/* <StatsCards />
-      <SalesChart /> */}
     </div>
   );
 }
