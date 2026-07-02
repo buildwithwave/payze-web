@@ -13,17 +13,19 @@ import {
   CreditCardIcon,
   Settings01Icon,
   Logout01Icon,
+  ShoppingBasket01Icon,
 } from "@hugeicons/core-free-icons";
 import { cn } from "@/lib/utils";
 import { StoreSwitcher } from "@/components/dashboard/store-switcher";
 
 const mainNav = [
   { label: "Dashboard", href: "/dashboard", icon: Home01Icon },
-  { label: "Payments", href: "/dashboard/payments", icon: CreditCardIcon },
-  { label: "Stores", href: "/dashboard/stores", icon: Store01Icon },
+  { label: "Point of Sale", href: "/dashboard/pos", icon: ShoppingBasket01Icon },
+  // { label: "Stores", href: "/dashboard/stores", icon: Store01Icon },
   { label: "Products", href: "/dashboard/products", icon: Package01Icon },
   { label: "Invoices", href: "/dashboard/invoices", icon: Invoice01Icon },
-  { label: "Analytics", href: "/dashboard/analytics", icon: Analytics02Icon },
+  { label: "History", href: "/dashboard/payments", icon: CreditCardIcon },
+  // { label: "Analytics", href: "/dashboard/analytics", icon: Analytics02Icon },
 ];
 
 const bottomNav = [

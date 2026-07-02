@@ -7,6 +7,8 @@ import {
   Store01Icon,
   Invoice01Icon,
 } from "@hugeicons/core-free-icons";
+import { useProducts } from "@/hooks/use-products";
+import { useInvoices } from "@/hooks/use-invoices";
 
 interface StatCardProps {
   label: string;
@@ -16,41 +18,6 @@ interface StatCardProps {
   iconBg: string;
   iconColor: string;
 }
-
-const stats: StatCardProps[] = [
-  {
-    label: "Products",
-    value: "0",
-    change: "+0%",
-    icon: Package01Icon,
-    iconBg: "bg-violet-100",
-    iconColor: "text-violet-600",
-  },
-  {
-    label: "Orders",
-    value: "0",
-    change: "+0%",
-    icon: ShoppingCart01Icon,
-    iconBg: "bg-blue-100",
-    iconColor: "text-blue-600",
-  },
-  {
-    label: "Stores",
-    value: "1",
-    change: "+0%",
-    icon: Store01Icon,
-    iconBg: "bg-emerald-100",
-    iconColor: "text-emerald-600",
-  },
-  {
-    label: "Invoices",
-    value: "0",
-    change: "+0%",
-    icon: Invoice01Icon,
-    iconBg: "bg-amber-100",
-    iconColor: "text-amber-600",
-  },
-];
 
 function StatCard({ label, value, change, icon, iconBg, iconColor }: StatCardProps) {
   return (
@@ -78,6 +45,44 @@ function StatCard({ label, value, change, icon, iconBg, iconColor }: StatCardPro
 }
 
 export function StatsCards() {
+  const { data: products } = useProducts();
+  const { data: invoices } = useInvoices();
+
+  const stats: StatCardProps[] = [
+    {
+      label: "Products",
+      value: String(products?.length ?? 0),
+      change: "+0%",
+      icon: Package01Icon,
+      iconBg: "bg-violet-100",
+      iconColor: "text-violet-600",
+    },
+    {
+      label: "Orders",
+      value: String(invoices?.length ?? 0),
+      change: "+0%",
+      icon: ShoppingCart01Icon,
+      iconBg: "bg-blue-100",
+      iconColor: "text-blue-600",
+    },
+    {
+      label: "Stores",
+      value: "1",
+      change: "+0%",
+      icon: Store01Icon,
+      iconBg: "bg-emerald-100",
+      iconColor: "text-emerald-600",
+    },
+    {
+      label: "Invoices",
+      value: String(invoices?.length ?? 0),
+      change: "+0%",
+      icon: Invoice01Icon,
+      iconBg: "bg-amber-100",
+      iconColor: "text-amber-600",
+    },
+  ];
+
   return (
     <div className="grid grid-cols-4 gap-4 mt-6">
       {stats.map((stat) => (

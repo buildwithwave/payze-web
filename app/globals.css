@@ -117,6 +117,23 @@
   --sidebar-ring: oklch(0.65 0.2 264);
 }
 
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #receipt-print,
+  #receipt-print * {
+    visibility: visible;
+  }
+  #receipt-print {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    border: none;
+    border-radius: 0;
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
