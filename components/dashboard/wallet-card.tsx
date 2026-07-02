@@ -143,7 +143,7 @@ export function WalletCard() {
 
       {/* Transaction actions */}
       <div className="mt-3 grid grid-cols-3 gap-3 h-96">
-        <button className="flex h-full flex-col justify-between rounded-4xl bg-blue-600 p-4 text-left transition-colors hover:bg-blue-700 active:scale-[0.98]">
+        <button className="flex h-full flex-col justify-between rounded-4xl bg-blue-600 p-4 text-left transition-colors hover:bg-blue-700 active:scale-[0.98] cursor-pointer">
           <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/15">
             <HugeiconsIcon
               icon={QrCode01Icon}
@@ -151,19 +151,21 @@ export function WalletCard() {
               className="text-white"
             />
           </div>
-          <p className="font-semibold tracking-tight text-white">Receive</p>
+          <p className="text-lg ml-2 font-semibold tracking-tight text-white">
+            Receive
+          </p>
         </button>
 
-        <button className="flex h-full flex-col justify-between rounded-4xl bg-gray-50 p-4 text-left transition-colors hover:bg-gray-100 active:scale-[0.98]">
+        <button className="flex h-full flex-col justify-between rounded-4xl bg-gray-50 p-4 text-left transition-colors hover:bg-gray-100 active:scale-[0.98] cursor-pointer">
           <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
             <ArrowUpRightIcon size={24} className="text-gray-700" />
           </div>
-          <p className="text-lg font-semibold tracking-tight text-foreground">
+          <p className="text-lg ml-2 font-semibold tracking-tight text-foreground">
             Send
           </p>
         </button>
 
-        <button className="flex h-full flex-col justify-between rounded-4xl bg-gray-50 p-4 text-left transition-colors hover:bg-gray-100 active:scale-[0.98]">
+        <button className="flex h-full flex-col justify-between rounded-4xl bg-gray-50 p-4 text-left transition-colors hover:bg-gray-100 active:scale-[0.98] cursor-pointer">
           <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
             <HugeiconsIcon
               icon={MoneySend01Icon}
@@ -171,7 +173,7 @@ export function WalletCard() {
               className="text-gray-700"
             />
           </div>
-          <p className="font-semibold tracking-tight text-foreground">
+          <p className="text-lg ml-2 font-semibold tracking-tight text-foreground">
             Withdraw
           </p>
         </button>
