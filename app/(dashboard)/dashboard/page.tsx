@@ -33,8 +33,10 @@ export default function DashboardPage() {
         <WalletCard />
       </div>
 
-      <StatsCards />
-      <SalesChart />
+      
+
+      {/* <StatsCards />
+      <SalesChart /> */}
     </div>
   );
 }
