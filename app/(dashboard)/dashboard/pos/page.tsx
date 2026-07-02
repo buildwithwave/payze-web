@@ -385,7 +385,6 @@ export default function PosPage() {
                       <div className="mt-1 flex items-center justify-between gap-2">
                         <p
                           className="text-sm font-semibold"
-                          style={{ fontFamily: "var(--font-currency)" }}
                         >
                           ₦{formatMoney(product.price)}
                         </p>
@@ -412,7 +411,7 @@ export default function PosPage() {
       </div>
 
       {/* Cart */}
-      <div className="w-[380px] shrink-0 border-l border-border">
+      <div className="w-[380px] shrink-0">
         <CartPanel
           items={cart}
           customerName={customerName}

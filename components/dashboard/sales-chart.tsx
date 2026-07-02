@@ -47,7 +47,6 @@ function CustomTooltip({
       <p className="text-xs text-muted-foreground">{label}</p>
       <p
         className="text-sm font-bold text-foreground"
-        style={{ fontFamily: "var(--font-currency)" }}
       >
         {formatValue(payload[0].value)}
       </p>

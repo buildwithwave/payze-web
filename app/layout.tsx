@@ -21,12 +21,6 @@ const dmsans = DM_Sans({
   subsets: ["latin"],
 });
 
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-currency",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
-
 export const metadata: Metadata = {
   title: "Payze",
   description: "Payze",
@@ -40,7 +34,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.className} ${spaceGrotesk.variable} h-full antialiased`}
+      className={`${inter.className} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col ">
         <Providers>

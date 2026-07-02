@@ -62,7 +62,6 @@ function PaymentForm({
         <p className="text-xs text-muted-foreground">Amount due</p>
         <p
           className="mt-0.5 text-3xl font-bold tracking-tight"
-          style={{ fontFamily: "var(--font-currency)" }}
         >
           ₦{formatMoney(total)}
         </p>
@@ -129,7 +128,6 @@ function PaymentForm({
                 key={amount}
                 onClick={() => setTendered(String(amount))}
                 className="rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground transition-colors outline-none hover:bg-gray-100 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
-                style={{ fontFamily: "var(--font-currency)" }}
               >
                 ₦{formatMoney(amount).replace(".00", "")}
               </button>

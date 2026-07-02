@@ -174,7 +174,6 @@ export default function InvoicesPage() {
                   </td>
                   <td
                     className="py-3 pl-4 text-right font-medium"
-                    style={{ fontFamily: "var(--font-currency)" }}
                   >
                     {formatNaira(invoice.total)}
                   </td>

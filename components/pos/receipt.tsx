@@ -51,14 +51,12 @@ export function Receipt({
                 <p className="truncate font-medium text-foreground">{item.name}</p>
                 <p
                   className="text-xs text-muted-foreground"
-                  style={{ fontFamily: "var(--font-currency)" }}
                 >
                   {item.quantity} × ₦{formatMoney(item.price)}
                 </p>
               </div>
               <p
                 className="shrink-0 font-medium"
-                style={{ fontFamily: "var(--font-currency)" }}
               >
                 ₦{formatMoney(item.price * item.quantity)}
               </p>
@@ -70,7 +68,6 @@ export function Receipt({
       {/* Totals */}
       <div
         className="mt-4 space-y-1.5 border-t border-dashed border-border pt-3"
-        style={{ fontFamily: "var(--font-currency)" }}
       >
         <div className="flex justify-between text-xs text-muted-foreground">
           <span className="font-sans">Subtotal</span>
