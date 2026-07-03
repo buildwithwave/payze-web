@@ -1,7 +1,9 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useMemo, ReactNode } from "react";
+import { usePathname } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import { Store, storesService } from "@/services/stores";
 import { toast } from "@/components/ui/toast";
 
@@ -21,43 +23,68 @@ const StoreContext = createContext<StoreContextType | undefined>(undefined);
 
 export function StoreProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
-  const [token, setToken] = useState<string | null>(null);
+  const pathname = usePathname();
+  const [token, setToken] = useState<string | null>(() =>
+    typeof window === "undefined" ? null : localStorage.getItem("token")
+  );
+  const [activeStoreIdState, setActiveStoreIdState] = useState<string | null>(() =>
+    typeof window === "undefined" ? null : localStorage.getItem("active_store_id")
+  );
+  const storesQueryKey = useMemo(() => ["stores", token] as const, [token]);
 
-  // Check token to ensure we only fetch when logged in
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      setToken(localStorage.getItem("token"));
-      
-      // Listen for local storage changes (in case of login/logout)
-      const handleStorage = () => {
-        setToken(localStorage.getItem("token"));
-      };
-      window.addEventListener("storage", handleStorage);
-      return () => window.removeEventListener("storage", handleStorage);
-    }
-  }, []);
+    if (typeof window === "undefined") return;
 
-  const { data: stores = [], isLoading, refetch } = useQuery({
-    queryKey: ["stores"],
+    const syncToken = () => {
+      setToken(localStorage.getItem("token"));
+    };
+
+    syncToken();
+    window.addEventListener("storage", syncToken);
+    window.addEventListener("focus", syncToken);
+    window.addEventListener("payze-auth-token-changed", syncToken);
+
+    return () => {
+      window.removeEventListener("storage", syncToken);
+      window.removeEventListener("focus", syncToken);
+      window.removeEventListener("payze-auth-token-changed", syncToken);
+    };
+  }, [pathname]);
+
+  const { data: fetchedStores = [], isLoading, isFetching } = useQuery({
+    queryKey: storesQueryKey,
     queryFn: storesService.getStores,
     enabled: !!token,
   });
+  const stores = useMemo(() => (token ? fetchedStores : []), [fetchedStores, token]);
 
-  const [activeStoreId, setActiveStoreIdState] = useState<string | null>(null);
-
-  // Initial load of activeStoreId from localStorage or first store
   useEffect(() => {
-    if (typeof window !== "undefined" && stores.length > 0) {
-      const saved = localStorage.getItem("active_store_id");
-      const exists = stores.some((s) => s.id === saved);
-      if (saved && exists) {
-        setActiveStoreIdState(saved);
-      } else {
-        setActiveStoreIdState(stores[0].id);
-        localStorage.setItem("active_store_id", stores[0].id);
-      }
-    }
-  }, [stores]);
+    if (typeof window === "undefined" || stores.length === 0) return;
+
+    const activeStoreId =
+      stores.find((store) => store.id === activeStoreIdState)?.id ?? stores[0].id;
+    localStorage.setItem("active_store_id", activeStoreId);
+  }, [activeStoreIdState, stores]);
+
+  const activeStoreId =
+    token
+      ? stores.find((store) => store.id === activeStoreIdState)?.id ??
+        stores[0]?.id ??
+        null
+      : null;
+
+  const activeStore = stores.find((s) => s.id === activeStoreId) || null;
+
+  useEffect(() => {
+    if (!token || !activeStoreId) return;
+    queryClient.invalidateQueries({ queryKey: ["wallet"] });
+    queryClient.invalidateQueries({ queryKey: ["wallet-summary"] });
+    queryClient.invalidateQueries({ queryKey: ["transactions"] });
+    queryClient.invalidateQueries({ queryKey: ["products"] });
+    queryClient.invalidateQueries({ queryKey: ["invoices"] });
+    queryClient.invalidateQueries({ queryKey: ["metrics-overview"] });
+    queryClient.invalidateQueries({ queryKey: ["sales-trend"] });
+  }, [activeStoreId, queryClient, token]);
 
   const setActiveStoreId = (id: string) => {
     setActiveStoreIdState(id);
@@ -69,19 +96,27 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const createStoreMutation = useMutation({
     mutationFn: (name: string) => storesService.createStore(name),
     onSuccess: (newStore) => {
+      queryClient.setQueryData<Store[]>(storesQueryKey, (current = []) => {
+        if (current.some((store) => store.id === newStore.id)) return current;
+        return [...current, newStore];
+      });
       queryClient.invalidateQueries({ queryKey: ["stores"] });
       toast.success("Store created", `"${newStore.name}" is ready`);
       setActiveStoreId(newStore.id);
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
+      const message =
+        error instanceof AxiosError
+          ? error.response?.data?.message || error.response?.data?.error || error.message
+          : error instanceof Error
+            ? error.message
+            : "Something went wrong";
       toast.error(
         "Couldn't create store",
-        error?.response?.data?.message || error.message || "Something went wrong"
+        message
       );
     },
   });
-
-  const activeStore = stores.find((s) => s.id === activeStoreId) || null;
 
   return (
     <StoreContext.Provider
@@ -90,7 +125,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         activeStore,
         activeStoreId,
         setActiveStoreId,
-        isLoading: isLoading && !!token,
+        isLoading: (!!token && (isLoading || isFetching)) || (!!token && stores.length > 0 && !activeStore),
         createStore: {
           mutate: createStoreMutation.mutate,
           isPending: createStoreMutation.isPending,

@@ -1,4 +1,5 @@
 import { Sidebar } from "@/components/dashboard/sidebar";
+import { CreateFirstStoreGate } from "@/components/dashboard/create-first-store-gate";
 
 export default function DashboardLayout({
   children,
@@ -10,7 +11,7 @@ export default function DashboardLayout({
       <Sidebar />
       <div className="p-4 pl-0 w-full h-full">
         <div className="flex-1 bg-white rounded-3xl border overflow-auto h-full">
-          {children}
+          <CreateFirstStoreGate>{children}</CreateFirstStoreGate>
         </div>
       </div>
     </div>

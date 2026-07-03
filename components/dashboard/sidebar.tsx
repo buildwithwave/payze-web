@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Home01Icon,
-  Store01Icon,
   Package01Icon,
   Invoice01Icon,
   CreditCardIcon,
@@ -104,6 +103,7 @@ export function Sidebar() {
           className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[15px] font-medium text-muted-foreground hover:text-foreground hover:bg-black/5 transition-all w-full"
           onClick={() => {
             localStorage.removeItem("token");
+            window.dispatchEvent(new Event("payze-auth-token-changed"));
             window.location.href = "/login";
           }}
         >

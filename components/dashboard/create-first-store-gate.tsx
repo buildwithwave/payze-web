@@ -8,12 +8,38 @@ import { useStore } from "@/lib/store-context";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+
+function DashboardStoreLoading() {
+  return (
+    <div className="p-8">
+      <div className="mx-auto mt-10 w-full max-w-4xl space-y-6">
+        <div className="space-y-2">
+          <Skeleton className="h-7 w-48 rounded-lg" />
+          <Skeleton className="h-4 w-64 rounded-lg" />
+        </div>
+        <div className="space-y-6">
+          <Skeleton className="h-6 w-32 rounded-full" />
+          <Skeleton className="h-12 w-64 rounded-xl" />
+          <Skeleton className="h-14 w-full rounded-2xl" />
+          <Skeleton className="h-24 w-full rounded-2xl" />
+          <div className="grid h-80 grid-cols-3 gap-4">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <Skeleton key={index} className="h-full rounded-4xl" />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export function CreateFirstStoreGate({ children }: { children: React.ReactNode }) {
-  const { stores, isLoading, createStore } = useStore();
+  const { stores, activeStore, isLoading, createStore } = useStore();
   const [storeName, setStoreName] = useState("");
 
   const needsStore = !isLoading && stores.length === 0;
+  const canRenderDashboard = !isLoading && !!activeStore;
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -24,7 +50,7 @@ export function CreateFirstStoreGate({ children }: { children: React.ReactNode }
 
   return (
     <>
-      {children}
+      {canRenderDashboard ? children : <DashboardStoreLoading />}
 
       <Dialog
         open={needsStore}
