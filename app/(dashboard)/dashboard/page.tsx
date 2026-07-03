@@ -38,6 +38,7 @@ export default function DashboardPage() {
         {/* <StatsCards />
         <SalesChart /> */}
       </div>
+
     </div>
   );
 }

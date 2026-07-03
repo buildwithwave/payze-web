@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import {
   authService,
@@ -22,7 +22,7 @@ export function useLogin() {
   return useMutation({
     mutationFn: (data: LoginPayload) => authService.login(data),
     onSuccess: (res) => {
-      const { token } = res.data;
+      const token = res.data?.session?.access_token || res.data?.token;
       if (token) localStorage.setItem("token", token);
       toast.success("Welcome back!");
       router.push("/dashboard");
@@ -48,10 +48,15 @@ export function useRegister() {
   return useMutation({
     mutationFn: (data: RegisterPayload) => authService.register(data),
     onSuccess: (res) => {
-      const { token } = res.data;
-      if (token) localStorage.setItem("token", token);
-      toast.success("Account created!");
-      router.push("/dashboard");
+      const token = res.data?.session?.access_token || res.data?.token;
+      if (token) {
+        localStorage.setItem("token", token);
+        toast.success("Account created!");
+        router.push("/dashboard");
+      } else {
+        toast.success("Account created!", "Please log in to continue");
+        router.push("/login");
+      }
     },
     onError: (error) => {
       toast.error("Registration failed", getErrorMessage(error));
@@ -62,8 +67,42 @@ export function useRegister() {
 export function useUser() {
   return useQuery({
     queryKey: ["user", "me"],
-    queryFn: () => authService.getMe().then((res) => res.data),
+    queryFn: () => authService.getMe(),
     enabled: typeof window !== "undefined" && !!localStorage.getItem("token"),
     retry: false,
   });
 }
+
+export function useUpdateProfile() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: { firstName?: string; lastName?: string; businessName?: string; phone?: string }) =>
+      authService.updateProfile(data),
+    onSuccess: (user) => {
+      queryClient.setQueryData(["user", "me"], user);
+      toast.success("Profile updated", "Your profile details have been saved");
+    },
+    onError: (error) => {
+      toast.error("Couldn't update profile", getErrorMessage(error));
+    },
+  });
+}
+
+export function useChangePassword() {
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: (data: { currentPassword: string; newPassword: string }) =>
+      authService.changePassword(data),
+    onSuccess: () => {
+      toast.success("Password changed successfully", "Please log in again with your new password");
+      localStorage.removeItem("token");
+      router.push("/login");
+    },
+    onError: (error) => {
+      toast.error("Couldn't change password", getErrorMessage(error));
+    },
+  });
+}
+

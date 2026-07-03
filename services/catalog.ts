@@ -1,6 +1,4 @@
-// Client-side catalog store backed by localStorage.
-// Mirrors the async shape of the axios services so it can be swapped
-// for real API calls without touching the hooks or UI.
+import api from "@/lib/axios";
 
 export interface Product {
   id: string;
@@ -21,7 +19,7 @@ export type ProductInput = Omit<Product, "id" | "createdAt" | "updatedAt">;
 export type PaymentMethod = "cash" | "transfer" | "card";
 
 export interface InvoiceItem {
-  productId: string;
+  productId: string | null;
   name: string;
   price: number;
   quantity: number;
@@ -42,11 +40,18 @@ export interface Invoice {
 }
 
 export interface CheckoutPayload {
-  items: InvoiceItem[];
+  items: { productId: string; name?: string; price?: number; quantity: number }[];
   discount: number;
   paymentMethod: PaymentMethod;
   amountTendered?: number;
   customerName?: string;
+}
+
+export interface Paginated<T> {
+  data: T[];
+  total: number;
+  page: number;
+  limit: number;
 }
 
 export const DEFAULT_CATEGORIES = [
@@ -58,164 +63,93 @@ export const DEFAULT_CATEGORIES = [
   "Other",
 ];
 
-const PRODUCTS_KEY = "payze_products";
-const INVOICES_KEY = "payze_invoices";
-const INVOICE_SEQ_KEY = "payze_invoice_seq";
-
-function read<T>(key: string): T[] {
-  if (typeof window === "undefined") return [];
-  try {
-    return JSON.parse(localStorage.getItem(key) || "[]") as T[];
-  } catch {
-    return [];
-  }
-}
-
-function write<T>(key: string, value: T[]) {
-  localStorage.setItem(key, JSON.stringify(value));
-}
-
-function nextInvoiceNumber(): string {
-  const seq = Number(localStorage.getItem(INVOICE_SEQ_KEY) || "0") + 1;
-  localStorage.setItem(INVOICE_SEQ_KEY, String(seq));
-  return `INV-${String(seq).padStart(4, "0")}`;
-}
-
+/** Generate a random 13-digit EAN-like barcode string */
 export function generateBarcode(): string {
-  let code = "2";
-  for (let i = 0; i < 12; i++) code += Math.floor(Math.random() * 10);
-  return code;
+  const digits = Array.from({ length: 12 }, () => Math.floor(Math.random() * 10));
+  // calculate EAN-13 check digit
+  const sum = digits.reduce((acc, d, i) => acc + d * (i % 2 === 0 ? 1 : 3), 0);
+  const check = (10 - (sum % 10)) % 10;
+  return [...digits, check].join("");
 }
 
 export const catalogService = {
-  getProducts: async (): Promise<Product[]> =>
-    read<Product>(PRODUCTS_KEY).sort((a, b) =>
-      b.createdAt.localeCompare(a.createdAt),
-    ),
 
-  createProduct: async (input: ProductInput): Promise<Product> => {
-    const products = read<Product>(PRODUCTS_KEY);
-    if (
-      input.barcode &&
-      products.some((p) => p.barcode === input.barcode)
-    ) {
-      throw new Error("A product with this barcode already exists");
-    }
-    const now = new Date().toISOString();
-    const product: Product = {
+  getProducts: async (storeId: string): Promise<Product[]> => {
+    const res = await api.get<Paginated<Product>>("/products", {
+      params: { storeId, limit: 100 },
+    });
+    return res.data.data;
+  },
+
+  getProductByBarcode: async (storeId: string, code: string): Promise<Product> => {
+    const res = await api.get<Product>(`/products/barcode/${code}`, {
+      params: { storeId },
+    });
+    return res.data;
+  },
+
+  createProduct: async (storeId: string, input: ProductInput): Promise<Product> => {
+    const res = await api.post<Product>("/products", {
+      storeId,
       ...input,
-      id: crypto.randomUUID(),
-      createdAt: now,
-      updatedAt: now,
-    };
-    write(PRODUCTS_KEY, [...products, product]);
-    return product;
+    });
+    return res.data;
   },
 
   updateProduct: async (
+    storeId: string,
     id: string,
-    input: Partial<ProductInput>,
+    input: Partial<ProductInput>
   ): Promise<Product> => {
-    const products = read<Product>(PRODUCTS_KEY);
-    const existing = products.find((p) => p.id === id);
-    if (!existing) throw new Error("Product not found");
-    if (
-      input.barcode &&
-      products.some((p) => p.id !== id && p.barcode === input.barcode)
-    ) {
-      throw new Error("A product with this barcode already exists");
-    }
-    const updated: Product = {
-      ...existing,
-      ...input,
-      updatedAt: new Date().toISOString(),
-    };
-    write(
-      PRODUCTS_KEY,
-      products.map((p) => (p.id === id ? updated : p)),
-    );
-    return updated;
+    const res = await api.patch<Product>(`/products/${id}`, input, {
+      params: { storeId },
+    });
+    return res.data;
   },
 
-  deleteProduct: async (id: string): Promise<void> => {
-    write(
-      PRODUCTS_KEY,
-      read<Product>(PRODUCTS_KEY).filter((p) => p.id !== id),
-    );
+  deleteProduct: async (storeId: string, id: string): Promise<void> => {
+    await api.delete(`/products/${id}`, {
+      params: { storeId },
+    });
   },
 
-  getInvoices: async (): Promise<Invoice[]> =>
-    read<Invoice>(INVOICES_KEY).sort((a, b) =>
-      b.createdAt.localeCompare(a.createdAt),
-    ),
+  uploadImage: async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append("image", file);
+    const res = await api.post<{ url: string }>("/uploads", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return res.data.url;
+  },
 
-  checkout: async (payload: CheckoutPayload): Promise<Invoice> => {
-    if (payload.items.length === 0) throw new Error("Cart is empty");
+  getInvoices: async (storeId: string): Promise<Invoice[]> => {
+    const res = await api.get<Paginated<Invoice>>("/invoices", {
+      params: { storeId, limit: 100 },
+    });
+    return res.data.data;
+  },
 
-    const products = read<Product>(PRODUCTS_KEY);
-    const subtotal = payload.items.reduce(
-      (sum, item) => sum + item.price * item.quantity,
-      0,
-    );
-    const total = Math.max(0, subtotal - payload.discount);
+  getInvoice: async (id: string): Promise<Invoice> => {
+    const res = await api.get<Invoice>(`/invoices/${id}`);
+    return res.data;
+  },
 
-    const invoice: Invoice = {
-      id: crypto.randomUUID(),
-      number: nextInvoiceNumber(),
-      items: payload.items,
-      subtotal,
+  checkout: async (storeId: string, payload: CheckoutPayload): Promise<Invoice> => {
+    const items = payload.items.map((item) => ({
+      productId: item.productId!,
+      quantity: item.quantity,
+    }));
+
+    const res = await api.post<Invoice>("/sales/checkout", {
+      storeId,
+      items,
       discount: payload.discount,
-      total,
       paymentMethod: payload.paymentMethod,
       amountTendered: payload.amountTendered,
-      change:
-        payload.paymentMethod === "cash" && payload.amountTendered
-          ? Math.max(0, payload.amountTendered - total)
-          : undefined,
-      customerName: payload.customerName?.trim() || undefined,
-      createdAt: new Date().toISOString(),
-    };
-
-    write(
-      PRODUCTS_KEY,
-      products.map((p) => {
-        const sold = payload.items.find((i) => i.productId === p.id);
-        return sold
-          ? { ...p, stock: Math.max(0, p.stock - sold.quantity) }
-          : p;
-      }),
-    );
-    write(INVOICES_KEY, [...read<Invoice>(INVOICES_KEY), invoice]);
-    return invoice;
-  },
-
-  seedSampleProducts: async (): Promise<Product[]> => {
-    const samples: Array<
-      Pick<Product, "name" | "category" | "price" | "stock">
-    > = [
-      { name: "Golden Penny Semovita 1kg", category: "Groceries", price: 1850, stock: 40 },
-      { name: "Dangote Sugar 500g", category: "Groceries", price: 950, stock: 60 },
-      { name: "Indomie Chicken 70g", category: "Groceries", price: 350, stock: 200 },
-      { name: "Peak Milk Tin 170g", category: "Groceries", price: 1200, stock: 48 },
-      { name: "Coca-Cola 50cl", category: "Drinks", price: 400, stock: 120 },
-      { name: "Eva Water 75cl", category: "Drinks", price: 300, stock: 90 },
-      { name: "Chivita Juice 1L", category: "Drinks", price: 1700, stock: 35 },
-      { name: "Gala Sausage Roll", category: "Snacks", price: 350, stock: 150 },
-      { name: "Digestive Biscuits", category: "Snacks", price: 1500, stock: 25 },
-      { name: "Sunlight Detergent 900g", category: "Household", price: 2200, stock: 30 },
-      { name: "Hypo Bleach 500ml", category: "Household", price: 650, stock: 45 },
-      { name: "Dettol Soap 110g", category: "Personal Care", price: 700, stock: 80 },
-    ];
-    const now = new Date().toISOString();
-    const products: Product[] = samples.map((s) => ({
-      ...s,
-      id: crypto.randomUUID(),
-      lowStockThreshold: 10,
-      barcode: generateBarcode(),
-      createdAt: now,
-      updatedAt: now,
-    }));
-    write(PRODUCTS_KEY, [...read<Product>(PRODUCTS_KEY), ...products]);
-    return products;
+      customerName: payload.customerName || undefined,
+    });
+    return res.data;
   },
 };
