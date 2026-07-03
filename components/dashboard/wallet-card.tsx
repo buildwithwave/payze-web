@@ -53,7 +53,7 @@ export function WalletCard() {
         <div className="flex items-baseline gap-1">
           <span className="text-lg font-medium text-muted-foreground">₦</span>
           <h2 className="text-4xl font-bold tracking-tight text-foreground">
-            {visible ? balance : "****.••"}
+            {visible ? balance : "****•**"}
           </h2>
         </div>
 
