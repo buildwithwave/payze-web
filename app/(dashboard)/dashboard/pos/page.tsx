@@ -14,7 +14,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/components/ui/toast";
-import { ProductThumb } from "@/components/products/product-thumb";
 import { CartPanel, CartItem } from "@/components/pos/cart-panel";
 import { PaymentDialog } from "@/components/pos/payment-dialog";
 import { ReceiptDialog } from "@/components/pos/receipt-dialog";
@@ -283,7 +282,7 @@ export default function PosPage() {
           {isLoading ? (
             <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
               {Array.from({ length: 8 }).map((_, i) => (
-                <Skeleton key={i} className="h-32 rounded-xl" />
+                <Skeleton key={i} className="aspect-square rounded-2xl" />
               ))}
             </div>
           ) : isError ? (
@@ -364,38 +363,57 @@ export default function PosPage() {
                     onClick={() => addToCart(product)}
                     disabled={soldOut}
                     className={cn(
-                      "group relative flex flex-col items-start gap-3 rounded-xl border border-border p-4 text-left transition-all outline-none hover:border-primary/40 hover:shadow-sm focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.99] cursor-pointer",
-                      soldOut && "pointer-events-none opacity-50",
+                      "group relative aspect-square overflow-hidden rounded-2xl text-left transition-transform outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 active:scale-[0.99] cursor-pointer",
+                      soldOut && "pointer-events-none",
                     )}
                   >
+                    {/* Image / placeholder fill */}
+                    {product.image ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={product.image}
+                        alt=""
+                        className={cn(
+                          "absolute inset-0 size-full object-cover transition-transform duration-300 group-hover:scale-105",
+                          soldOut && "grayscale",
+                        )}
+                      />
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+                        <span
+                          aria-hidden
+                          className="text-5xl font-semibold text-gray-300"
+                        >
+                          {product.name.charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Dark overlay so the text stays legible */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-gray-950/80 via-gray-950/25 to-transparent" />
+
                     {inCart > 0 && (
-                      <span className="absolute top-2.5 right-2.5 flex size-5 items-center justify-center rounded-full bg-foreground text-[10px] font-bold text-background">
+                      <span className="absolute top-2.5 right-2.5 flex size-6 items-center justify-center rounded-full bg-white text-[11px] font-bold text-foreground">
                         {inCart}
                       </span>
                     )}
-                    <ProductThumb
-                      name={product.name}
-                      image={product.image}
-                      className="size-10 rounded-lg text-base"
-                    />
-                    <div className="min-w-0 w-full">
-                      <p className="truncate text-sm font-medium text-foreground">
+
+                    <div className="absolute inset-x-0 bottom-0 p-3">
+                      <p className="truncate text-sm font-medium text-white">
                         {product.name}
                       </p>
-                      <div className="mt-1 flex items-center justify-between gap-2">
-                        <p
-                          className="text-sm font-semibold"
-                        >
+                      <div className="mt-0.5 flex items-center justify-between gap-2">
+                        <p className="text-sm font-semibold text-white">
                           ₦{formatMoney(product.price)}
                         </p>
                         <p
                           className={cn(
-                            "text-[11px]",
+                            "text-[11px] font-medium",
                             soldOut
-                              ? "font-medium text-red-500"
+                              ? "text-red-300"
                               : product.stock <= product.lowStockThreshold
-                                ? "font-medium text-amber-600"
-                                : "text-muted-foreground",
+                                ? "text-amber-300"
+                                : "text-white/70",
                           )}
                         >
                           {soldOut ? "Sold out" : `${product.stock} left`}

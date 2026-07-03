@@ -46,7 +46,7 @@ function fileToThumbnail(file: File): Promise<string> {
     const url = URL.createObjectURL(file);
     const img = new window.Image();
     img.onload = () => {
-      const max = 160;
+      const max = 512;
       const scale = Math.min(1, max / Math.max(img.width, img.height));
       const canvas = document.createElement("canvas");
       canvas.width = Math.round(img.width * scale);
