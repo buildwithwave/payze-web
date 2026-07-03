@@ -364,7 +364,7 @@ export default function PosPage() {
                     onClick={() => addToCart(product)}
                     disabled={soldOut}
                     className={cn(
-                      "group relative flex flex-col items-start gap-3 rounded-xl border border-border p-4 text-left transition-all outline-none hover:border-primary/40 hover:shadow-sm focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.99] cursor-pointer",
+                      "group relative flex flex-col items-start gap-3 rounded-xl border border-border p-4 text-left transition-all outline-none hover:border-primary/40 hover:shadow-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 active:scale-[0.99] cursor-pointer",
                       soldOut && "pointer-events-none opacity-50",
                     )}
                   >
@@ -383,18 +383,16 @@ export default function PosPage() {
                         {product.name}
                       </p>
                       <div className="mt-1 flex items-center justify-between gap-2">
-                        <p
-                          className="text-sm font-semibold"
-                        >
+                        <p className="text-sm font-semibold">
                           ₦{formatMoney(product.price)}
                         </p>
                         <p
                           className={cn(
-                            "text-[11px]",
+                            "text-[11px] font-medium",
                             soldOut
-                              ? "font-medium text-red-500"
+                              ? "text-red-500"
                               : product.stock <= product.lowStockThreshold
-                                ? "font-medium text-amber-600"
+                                ? "text-amber-600"
                                 : "text-muted-foreground",
                           )}
                         >

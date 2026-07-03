@@ -31,7 +31,10 @@ import {
   DEFAULT_CATEGORIES,
   generateBarcode,
   Product,
+  catalogService,
 } from "@/services/catalog";
+import { toast } from "@/components/ui/toast";
+
 
 interface FormErrors {
   name?: string;
@@ -46,7 +49,7 @@ function fileToThumbnail(file: File): Promise<string> {
     const url = URL.createObjectURL(file);
     const img = new window.Image();
     img.onload = () => {
-      const max = 160;
+      const max = 512;
       const scale = Math.min(1, max / Math.max(img.width, img.height));
       const canvas = document.createElement("canvas");
       canvas.width = Math.round(img.width * scale);
@@ -97,6 +100,7 @@ function ProductFormBody({
   );
   const [barcode, setBarcode] = useState(product?.barcode ?? "");
   const [image, setImage] = useState<string | undefined>(product?.image);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -107,13 +111,19 @@ function ProductFormBody({
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setUploadingImage(true);
     try {
-      setImage(await fileToThumbnail(file));
+      const url = await catalogService.uploadImage(file);
+      setImage(url);
+      toast.success("Photo uploaded", "Product image is ready");
     } catch {
-      // keep previous image if the file can't be read
+      toast.error("Upload failed", "Could not upload the image file");
+    } finally {
+      setUploadingImage(false);
     }
     e.target.value = "";
   };
+
 
   const handleSubmit = () => {
     const resolvedCategory = addingCategory ? newCategory.trim() : category;
@@ -161,7 +171,11 @@ function ProductFormBody({
             onChange={handleImageChange}
             aria-label="Upload product photo"
           />
-          {image ? (
+          {uploadingImage ? (
+            <div className="flex size-16 items-center justify-center rounded-xl border border-border bg-gray-50">
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+            </div>
+          ) : image ? (
             <div className="relative">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img

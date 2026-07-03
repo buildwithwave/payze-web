@@ -11,22 +11,48 @@ import {
   QrCode01Icon,
   MoneySend01Icon,
 } from "@hugeicons/core-free-icons";
-import { ArrowUpRightIcon, TrendUpIcon } from "@phosphor-icons/react";
+import { ArrowUpRightIcon, TrendUpIcon, TrendDownIcon } from "@phosphor-icons/react";
+import { useWallet, useWalletSummary } from "@/hooks/use-wallet";
+import { WithdrawDialog } from "@/components/dashboard/withdraw-dialog";
+import { formatMoney } from "@/lib/format";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function WalletCard() {
   const [visible, setVisible] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [withdrawOpen, setWithdrawOpen] = useState(false);
 
-  const balance = "2,450,000.00";
-  const accountNumber = "8012345678";
-  const bankName = "Nomba MFB";
-  const weekTotal = "639,000";
+  const { data: wallet, isLoading: loadingWallet } = useWallet();
+  const { data: summary, isLoading: loadingSummary } = useWalletSummary("week");
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(accountNumber);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
+    if (wallet?.accountNumber) {
+      navigator.clipboard.writeText(wallet.accountNumber);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    }
   };
+
+  if (loadingWallet) {
+    return (
+      <div className="w-full space-y-6">
+        <Skeleton className="h-6 w-32 rounded-full" />
+        <Skeleton className="h-12 w-64 rounded-xl" />
+        <Skeleton className="h-14 w-full rounded-2xl" />
+        <Skeleton className="h-24 w-full rounded-2xl" />
+        <div className="grid h-80 grid-cols-3 gap-4">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <Skeleton key={index} className="h-full rounded-4xl" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  const balance = wallet ? formatMoney(wallet.balance) : "0.00";
+  const weekTotal = summary ? formatMoney(summary.total) : "0.00";
+  const changePercent = summary?.changePercent ?? 0;
+  const isPositive = changePercent >= 0;
 
   return (
     <div className="w-full">
@@ -59,7 +85,8 @@ export function WalletCard() {
 
         <button
           onClick={() => setVisible(!visible)}
-          className="p-1.5 rounded-full hover:bg-muted transition-colors"
+          className="rounded-full p-1.5 transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 cursor-pointer"
+          aria-label={visible ? "Hide balance" : "Show balance"}
         >
           <HugeiconsIcon
             icon={visible ? ViewIcon : EyeOffIcon}
@@ -70,30 +97,44 @@ export function WalletCard() {
       </div>
 
       {/* Account info — one-tap copy, instant feedback */}
-      <button
-        onClick={handleCopy}
-        className="w-full flex items-center justify-between gap-3 rounded-2xl bg-gray-50 px-4 py-3 text-left transition-colors hover:bg-gray-100 active:scale-[0.99]"
-      >
-        <div className="min-w-0">
-          <p className="font-mono text-base font-semibold tracking-tight text-foreground truncate">
-            {accountNumber}
-          </p>
-          <p className="text-xs text-muted-foreground truncate">{bankName}</p>
-        </div>
-        <div
-          className={`flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs font-medium transition-colors ${
-            copied
-              ? "bg-emerald-100 text-emerald-700"
-              : "bg-white text-muted-foreground"
-          }`}
+      {wallet?.accountNumber ? (
+        <button
+          onClick={handleCopy}
+          className="w-full flex items-center justify-between gap-3 rounded-2xl bg-gray-50 px-4 py-3 text-left transition-colors hover:bg-gray-100 active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 cursor-pointer"
         >
-          <HugeiconsIcon icon={copied ? Tick01Icon : Copy01Icon} size={13} />
-          {copied ? "Copied" : "Copy"}
+          <div className="min-w-0">
+            <p className="font-mono text-base font-semibold tracking-tight text-foreground truncate">
+              {wallet.accountNumber}
+            </p>
+            <p className="text-xs text-muted-foreground truncate">
+              {wallet.bankName || "Nomba MFB"}
+            </p>
+          </div>
+          <div
+            className={`flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs font-medium transition-colors ${
+              copied
+                ? "bg-emerald-100 text-emerald-700"
+                : "bg-white text-muted-foreground"
+            }`}
+          >
+            <HugeiconsIcon icon={copied ? Tick01Icon : Copy01Icon} size={13} />
+            {copied ? "Copied" : "Copy"}
+          </div>
+        </button>
+      ) : (
+        <div className="w-full flex items-center justify-between gap-3 rounded-2xl bg-gray-50 px-4 py-3 text-left border border-dashed border-border">
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-foreground truncate animate-pulse">
+              Setting up your virtual account...
+            </p>
+            <p className="text-xs text-muted-foreground truncate">
+              Nomba MFB Provider
+            </p>
+          </div>
         </div>
-      </button>
+      )}
 
-      {/* Weekly earnings — just the number and a mood, no day-by-day detail.
-          A quiet ascending-coin motif stands in for a chart. */}
+      {/* Weekly earnings */}
       <div className="relative mt-6 overflow-hidden rounded-2xl border border-border p-4">
         <svg
           className="pointer-events-none absolute -right-3 -bottom-4 opacity-[0.06]"
@@ -134,15 +175,29 @@ export function WalletCard() {
               ₦{weekTotal}
             </p>
           </div>
-          <div className="flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-600">
-            <TrendUpIcon size={12} weight="bold" />
-            18%
-          </div>
+          {loadingSummary ? (
+            <Skeleton className="h-6 w-12 rounded-full" />
+          ) : (
+            <div
+              className={`flex items-center gap-1 rounded-full px-2 py-1 text-xs font-semibold ${
+                isPositive
+                  ? "bg-emerald-50 text-emerald-600"
+                  : "bg-red-50 text-red-600"
+              }`}
+            >
+              {isPositive ? (
+                <TrendUpIcon size={12} weight="bold" />
+              ) : (
+                <TrendDownIcon size={12} weight="bold" />
+              )}
+              {Math.abs(changePercent)}%
+            </div>
+          )}
         </div>
       </div>
 
       <div className="grid grid-cols-3 gap-4 h-80 mt-10">
-        <button className="flex h-full flex-col justify-between rounded-4xl bg-blue-600 p-5 text-left transition-colors hover:bg-blue-700 active:scale-[0.98] cursor-pointer">
+        <button className="flex h-full flex-col justify-between rounded-4xl bg-blue-600 p-5 text-left transition-colors hover:bg-blue-700 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 cursor-pointer">
           <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/15">
             <HugeiconsIcon
               icon={QrCode01Icon}
@@ -155,7 +210,7 @@ export function WalletCard() {
           </p>
         </button>
 
-        <button className="flex h-full flex-col justify-between rounded-4xl bg-gray-50 p-5 text-left transition-colors hover:bg-gray-100 active:scale-[0.98] cursor-pointer">
+        <button className="flex h-full flex-col justify-between rounded-4xl bg-gray-50 p-5 text-left transition-colors hover:bg-gray-100 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 cursor-pointer">
           <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
             <ArrowUpRightIcon size={24} className="text-gray-700" />
           </div>
@@ -164,7 +219,10 @@ export function WalletCard() {
           </p>
         </button>
 
-        <button className="flex h-full flex-col justify-between rounded-4xl bg-gray-50 p-5 text-left transition-colors hover:bg-gray-100 active:scale-[0.98] cursor-pointer">
+        <button
+          onClick={() => setWithdrawOpen(true)}
+          className="flex h-full flex-col justify-between rounded-4xl bg-gray-50 p-5 text-left transition-colors hover:bg-gray-100 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 cursor-pointer"
+        >
           <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
             <HugeiconsIcon
               icon={MoneySend01Icon}
@@ -177,6 +235,12 @@ export function WalletCard() {
           </p>
         </button>
       </div>
+
+      <WithdrawDialog
+        open={withdrawOpen}
+        onOpenChange={setWithdrawOpen}
+        availableBalance={wallet?.balance ?? 0}
+      />
     </div>
   );
 }

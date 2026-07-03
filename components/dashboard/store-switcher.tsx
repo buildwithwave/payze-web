@@ -5,17 +5,11 @@ import { AnimatePresence, motion } from "motion/react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { UnfoldMoreIcon, PlusSignIcon } from "@hugeicons/core-free-icons";
 import { CheckIcon, ArrowUpRightIcon } from "@phosphor-icons/react";
-
-interface Store {
-  id: string;
-  name: string;
-  email: string;
-}
-
-const stores: Store[] = [
-  { id: "1", name: "Onigbinde Stores", email: "ogbstores@gmail.com" },
-  { id: "2", name: "Payze HQ", email: "hello@payze.com" },
-];
+import { useStore } from "@/lib/store-context";
+import { useUser } from "@/hooks/use-auth";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 function initials(name: string) {
   return name
@@ -28,13 +22,17 @@ function initials(name: string) {
 }
 
 export function StoreSwitcher() {
+  const { stores, activeStore, setActiveStoreId, createStore, isLoading } = useStore();
+  const { data: user } = useUser();
   const [open, setOpen] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false);
+  const [newStoreName, setNewStoreName] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
-  const [activeStore, setActiveStore] = useState(stores[0]);
   const ref = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const listboxId = useId();
+
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -47,12 +45,12 @@ export function StoreSwitcher() {
   }, []);
 
   useEffect(() => {
-    if (open) {
+    if (open && activeStore) {
       const selected = stores.findIndex((s) => s.id === activeStore.id);
       setActiveIndex(selected === -1 ? 0 : selected);
       requestAnimationFrame(() => itemRefs.current[selected]?.focus());
     }
-  }, [open, activeStore.id]);
+  }, [open, activeStore?.id, stores]);
 
   function handleKeyDown(e: React.KeyboardEvent) {
     if (!open) return;
@@ -73,6 +71,73 @@ export function StoreSwitcher() {
     }
   }
 
+  const handleCreateStoreSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newStoreName.trim()) return;
+    createStore.mutate(newStoreName.trim());
+    setNewStoreName("");
+    setCreateOpen(false);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="mx-1 mb-4 flex items-center gap-3 px-2.5 py-2 animate-pulse">
+        <div className="h-8 w-8 rounded-full bg-gray-200" />
+        <div className="flex-1 space-y-1.5">
+          <div className="h-3 w-24 rounded bg-gray-200" />
+          <div className="h-2.5 w-32 rounded bg-gray-200" />
+        </div>
+      </div>
+    );
+  }
+
+  if (!activeStore) {
+    return (
+      <div className="mx-1 mb-4">
+        <button
+          onClick={() => setCreateOpen(true)}
+          className="flex items-center gap-2 rounded-lg text-sm w-full px-2.5 py-2 text-left text-blue-600 hover:bg-blue-50 transition-colors outline-none focus-visible:bg-blue-50"
+        >
+          <HugeiconsIcon icon={PlusSignIcon} size={15} />
+          <span className="flex-1 font-medium">Create a store</span>
+          <ArrowUpRightIcon size={14} />
+        </button>
+
+        <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+          <DialogContent>
+            <DialogTitle>Create new store</DialogTitle>
+            <DialogDescription>
+              Add a store to start managing products and sales.
+            </DialogDescription>
+            <form onSubmit={handleCreateStoreSubmit} className="mt-4 space-y-4">
+              <div className="space-y-1.5">
+                <Input
+                  value={newStoreName}
+                  onChange={(e) => setNewStoreName(e.target.value)}
+                  placeholder="Store name (e.g., Onigbinde Stores)"
+                  autoFocus
+                  required
+                />
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setCreateOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" loading={createStore.isPending}>
+                  Create store
+                </Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
+      </div>
+    );
+  }
+
   return (
     <div ref={ref} className="relative mx-1 mb-4" onKeyDown={handleKeyDown}>
       <button
@@ -91,7 +156,7 @@ export function StoreSwitcher() {
             {activeStore.name}
           </p>
           <p className="text-xs text-muted-foreground truncate">
-            {activeStore.email}
+            {user?.email || "Store Account"}
           </p>
         </div>
         <HugeiconsIcon
@@ -127,7 +192,7 @@ export function StoreSwitcher() {
                     aria-selected={selected}
                     tabIndex={-1}
                     onClick={() => {
-                      setActiveStore(store);
+                      setActiveStoreId(store.id);
                       setOpen(false);
                       triggerRef.current?.focus();
                     }}
@@ -156,8 +221,11 @@ export function StoreSwitcher() {
             <div className="my-1.5 h-px bg-border" />
 
             <button
-              className="flex items-center gap-2 rounded-lg text-sm w-full px-2.5 py-2 text-left text-blue-600 hover:bg-blue-50 transition-colors outline-none focus-visible:bg-blue-50"
-              onClick={() => setOpen(false)}
+              className="flex items-center gap-2 rounded-lg text-sm w-full px-2.5 py-2 text-left text-blue-600 hover:bg-blue-50 transition-colors outline-none focus-visible:bg-blue-50 cursor-pointer"
+              onClick={() => {
+                setOpen(false);
+                setCreateOpen(true);
+              }}
             >
               <HugeiconsIcon icon={PlusSignIcon} size={15} />
               <span className="flex-1 font-medium">Create new store</span>
@@ -166,6 +234,38 @@ export function StoreSwitcher() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+        <DialogContent>
+          <DialogTitle>Create new store</DialogTitle>
+          <DialogDescription>
+            Add a store to start managing products and sales.
+          </DialogDescription>
+          <form onSubmit={handleCreateStoreSubmit} className="mt-4 space-y-4">
+            <div className="space-y-1.5">
+              <Input
+                value={newStoreName}
+                onChange={(e) => setNewStoreName(e.target.value)}
+                placeholder="Store name (e.g., Onigbinde Stores)"
+                autoFocus
+                required
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setCreateOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" loading={createStore.isPending}>
+                Create store
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
