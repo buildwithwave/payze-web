@@ -141,16 +141,7 @@ export function WalletCard() {
         </div>
       </div>
 
-      <div className="mt-14 mb-5">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600">
-          Quick actions
-        </p>
-        <p className="mt-2 text-3xl font-semibold tracking-tighter leading-[1.1]">
-          Where&apos;s the <br /> money going?
-        </p>
-      </div>
-
-      <div className="grid grid-cols-3 gap-4 h-80">
+      <div className="grid grid-cols-3 gap-4 h-80 mt-10">
         <button className="flex h-full flex-col justify-between rounded-4xl bg-blue-600 p-5 text-left transition-colors hover:bg-blue-700 active:scale-[0.98] cursor-pointer">
           <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/15">
             <HugeiconsIcon
