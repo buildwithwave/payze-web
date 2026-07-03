@@ -16,6 +16,7 @@ import { useBanks, useResolveAccount, useWithdraw } from "@/hooks/use-wallet";
 import { toast } from "@/components/ui/toast";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Cancel01Icon, Tick01Icon } from "@hugeicons/core-free-icons";
+import { AxiosError } from "axios";
 
 interface WithdrawDialogProps {
   open: boolean;
@@ -23,9 +24,16 @@ interface WithdrawDialogProps {
   availableBalance: number;
 }
 
+function getResolveErrorMessage(error: unknown) {
+  if (error instanceof AxiosError) {
+    return error.response?.data?.message || error.response?.data?.error || error.message;
+  }
+  return error instanceof Error ? error.message : "Could not resolve account name";
+}
+
 export function WithdrawDialog({ open, onOpenChange, availableBalance }: WithdrawDialogProps) {
   const { data: banks = [], isLoading: loadingBanks } = useBanks();
-  const resolveAccount = useResolveAccount();
+  const { mutate: resolveAccount, isPending: resolvingAccount } = useResolveAccount();
   const withdraw = useWithdraw();
 
   const [amount, setAmount] = useState("");
@@ -33,41 +41,49 @@ export function WithdrawDialog({ open, onOpenChange, availableBalance }: Withdra
   const [accountNumber, setAccountNumber] = useState("");
   const [resolvedName, setResolvedName] = useState<string | null>(null);
   const [resolveError, setResolveError] = useState<string | null>(null);
+  const selectedBank = banks.find((bank) => bank.code === bankCode);
 
   // Trigger name enquiry when bank is selected and account number is 10 digits
   useEffect(() => {
     if (bankCode && accountNumber.length === 10) {
-      setResolvedName(null);
-      setResolveError(null);
-      resolveAccount.mutate(
+      resolveAccount(
         { bankCode, accountNumber },
         {
           onSuccess: (name) => {
             setResolvedName(name);
           },
-          onError: (err: any) => {
-            setResolveError(
-              err?.response?.data?.message || err?.message || "Could not resolve account name"
-            );
+          onError: (error) => {
+            setResolveError(getResolveErrorMessage(error));
           },
         }
       );
-    } else {
-      setResolvedName(null);
-      setResolveError(null);
     }
-  }, [bankCode, accountNumber]);
+  }, [bankCode, accountNumber, resolveAccount]);
 
-  // Reset form when dialog opens/closes
-  useEffect(() => {
-    if (!open) {
-      setAmount("");
-      setBankCode("");
-      setAccountNumber("");
-      setResolvedName(null);
-      setResolveError(null);
-    }
-  }, [open]);
+  const resetForm = () => {
+    setAmount("");
+    setBankCode("");
+    setAccountNumber("");
+    setResolvedName(null);
+    setResolveError(null);
+  };
+
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (!nextOpen) resetForm();
+    onOpenChange(nextOpen);
+  };
+
+  const handleBankChange = (value: string | null) => {
+    setBankCode(value || "");
+    setResolvedName(null);
+    setResolveError(null);
+  };
+
+  const handleAccountNumberChange = (value: string) => {
+    setAccountNumber(value.replace(/[^0-9]/g, ""));
+    setResolvedName(null);
+    setResolveError(null);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -103,7 +119,7 @@ export function WithdrawDialog({ open, onOpenChange, availableBalance }: Withdra
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-md">
         <DialogTitle>Withdraw Funds</DialogTitle>
         <DialogDescription>
@@ -138,9 +154,13 @@ export function WithdrawDialog({ open, onOpenChange, availableBalance }: Withdra
             {loadingBanks ? (
               <div className="h-9 w-full rounded border bg-gray-50 animate-pulse" />
             ) : (
-              <Select value={bankCode} onValueChange={(val) => setBankCode(val || "")}>
+              <Select value={bankCode} onValueChange={handleBankChange}>
                 <SelectTrigger id="withdraw-bank" className="h-9 text-left">
-                  <SelectValue placeholder="Select bank" />
+                  {selectedBank ? (
+                    <span className="truncate">{selectedBank.name}</span>
+                  ) : (
+                    <SelectValue placeholder="Select bank" />
+                  )}
                 </SelectTrigger>
                 <SelectContent className="max-h-60 overflow-y-auto">
                   {banks.map((bank) => (
@@ -163,13 +183,13 @@ export function WithdrawDialog({ open, onOpenChange, availableBalance }: Withdra
               maxLength={10}
               placeholder="0123456789"
               value={accountNumber}
-              onChange={(e) => setAccountNumber(e.target.value.replace(/[^0-9]/g, ""))}
+              onChange={(e) => handleAccountNumberChange(e.target.value)}
               required
             />
           </div>
 
           {/* Resolved Name Indicator */}
-          {resolveAccount.isPending && (
+          {resolvingAccount && (
             <div className="flex items-center gap-2 rounded-xl bg-gray-50 border border-border px-4 py-3 animate-pulse">
               <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
               <span className="text-xs text-muted-foreground font-medium">
