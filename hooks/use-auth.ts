@@ -23,7 +23,10 @@ export function useLogin() {
     mutationFn: (data: LoginPayload) => authService.login(data),
     onSuccess: (res) => {
       const token = res.data?.session?.access_token || res.data?.token;
-      if (token) localStorage.setItem("token", token);
+      if (token) {
+        localStorage.setItem("token", token);
+        window.dispatchEvent(new Event("payze-auth-token-changed"));
+      }
       toast.success("Welcome back!");
       router.push("/dashboard");
     },
@@ -51,6 +54,7 @@ export function useRegister() {
       const token = res.data?.session?.access_token || res.data?.token;
       if (token) {
         localStorage.setItem("token", token);
+        window.dispatchEvent(new Event("payze-auth-token-changed"));
         toast.success("Account created!");
         router.push("/dashboard");
       } else {
@@ -98,6 +102,7 @@ export function useChangePassword() {
     onSuccess: () => {
       toast.success("Password changed successfully", "Please log in again with your new password");
       localStorage.removeItem("token");
+      window.dispatchEvent(new Event("payze-auth-token-changed"));
       router.push("/login");
     },
     onError: (error) => {
@@ -105,4 +110,3 @@ export function useChangePassword() {
     },
   });
 }
-
