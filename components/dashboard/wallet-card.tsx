@@ -31,7 +31,7 @@ export function WalletCard() {
   return (
     <div className="w-full">
       {/* Currency badge */}
-      <div className="mb-4">
+      <div className="mb-6">
         <div className="border border-border pl-1.5 pr-3 py-1 rounded-full w-fit flex items-center gap-2">
           <div className="overflow-hidden shrink-0 relative">
             <Image
@@ -49,7 +49,7 @@ export function WalletCard() {
       </div>
 
       {/* Balance */}
-      <div className="mb-4 flex items-center gap-2">
+      <div className="mb-6 flex items-center gap-2">
         <div className="flex items-baseline gap-1">
           <span className="text-lg font-medium text-muted-foreground">₦</span>
           <h2 className="text-4xl font-bold tracking-tight text-foreground">
@@ -94,7 +94,7 @@ export function WalletCard() {
 
       {/* Weekly earnings — just the number and a mood, no day-by-day detail.
           A quiet ascending-coin motif stands in for a chart. */}
-      <div className="relative mt-3 overflow-hidden rounded-2xl border border-border p-4">
+      <div className="relative mt-6 overflow-hidden rounded-2xl border border-border p-4">
         <svg
           className="pointer-events-none absolute -right-3 -bottom-4 opacity-[0.06]"
           width="120"
@@ -141,12 +141,17 @@ export function WalletCard() {
         </div>
       </div>
 
-      {/* Quick actions */}
-      <p className="mt-6 mb-2 text-sm font-medium text-muted-foreground">
-        Quick actions
-      </p>
-      <div className="grid grid-cols-3 gap-3 h-96">
-        <button className="flex h-full flex-col justify-between rounded-4xl bg-blue-600 p-4 text-left transition-colors hover:bg-blue-700 active:scale-[0.98] cursor-pointer">
+      <div className="mt-14 mb-5">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600">
+          Quick actions
+        </p>
+        <p className="mt-2 text-3xl font-semibold tracking-tighter leading-[1.1]">
+          Where&apos;s the <br /> money going?
+        </p>
+      </div>
+
+      <div className="grid grid-cols-3 gap-4 h-80">
+        <button className="flex h-full flex-col justify-between rounded-4xl bg-blue-600 p-5 text-left transition-colors hover:bg-blue-700 active:scale-[0.98] cursor-pointer">
           <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/15">
             <HugeiconsIcon
               icon={QrCode01Icon}
@@ -159,7 +164,7 @@ export function WalletCard() {
           </p>
         </button>
 
-        <button className="flex h-full flex-col justify-between rounded-4xl bg-gray-50 p-4 text-left transition-colors hover:bg-gray-100 active:scale-[0.98] cursor-pointer">
+        <button className="flex h-full flex-col justify-between rounded-4xl bg-gray-50 p-5 text-left transition-colors hover:bg-gray-100 active:scale-[0.98] cursor-pointer">
           <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
             <ArrowUpRightIcon size={24} className="text-gray-700" />
           </div>
@@ -168,7 +173,7 @@ export function WalletCard() {
           </p>
         </button>
 
-        <button className="flex h-full flex-col justify-between rounded-4xl bg-gray-50 p-4 text-left transition-colors hover:bg-gray-100 active:scale-[0.98] cursor-pointer">
+        <button className="flex h-full flex-col justify-between rounded-4xl bg-gray-50 p-5 text-left transition-colors hover:bg-gray-100 active:scale-[0.98] cursor-pointer">
           <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
             <HugeiconsIcon
               icon={MoneySend01Icon}

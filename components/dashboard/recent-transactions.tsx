@@ -50,42 +50,31 @@ const transactions: Transaction[] = [
   },
 ];
 
+// Mirrors the Quick actions palette: blue for Receive, gray for Send/Withdraw.
 const rowStyles = {
-  received: {
-    iconBg: "bg-emerald-50",
-    iconColor: "text-emerald-600",
-    amountColor: "text-emerald-600",
-  },
-  sent: {
-    iconBg: "bg-gray-100",
-    iconColor: "text-gray-700",
-    amountColor: "text-foreground",
-  },
-  withdrawal: {
-    iconBg: "bg-gray-100",
-    iconColor: "text-gray-700",
-    amountColor: "text-foreground",
-  },
+  received: { iconColor: "text-blue-600", amountColor: "text-blue-600" },
+  sent: { iconColor: "text-gray-700", amountColor: "text-foreground" },
+  withdrawal: { iconColor: "text-gray-700", amountColor: "text-foreground" },
 } as const;
 
 function TransactionIcon({ type }: { type: Transaction["type"] }) {
   const { iconColor } = rowStyles[type];
 
   if (type === "received") {
-    return <ArrowDownLeftIcon size={16} weight="bold" className={iconColor} />;
+    return <ArrowDownLeftIcon size={17} weight="bold" className={iconColor} />;
   }
   if (type === "sent") {
-    return <ArrowUpRightIcon size={16} weight="bold" className={iconColor} />;
+    return <ArrowUpRightIcon size={17} weight="bold" className={iconColor} />;
   }
   return (
-    <HugeiconsIcon icon={MoneySend01Icon} size={16} className={iconColor} />
+    <HugeiconsIcon icon={MoneySend01Icon} size={17} className={iconColor} />
   );
 }
 
 export function RecentTransactions() {
   return (
-    <div className="mt-8 w-full">
-      <div className="flex items-center justify-between mb-2">
+    <div className="mt-10 w-full">
+      <div className="flex items-center justify-between mb-3">
         <p className="text-sm font-medium text-muted-foreground">
           Recent transactions
         </p>
@@ -98,23 +87,21 @@ export function RecentTransactions() {
         </Link>
       </div>
 
-      <div className="rounded-2xl border border-border divide-y divide-border">
+      <div className="space-y-2">
         {transactions.map((tx) => {
           const style = rowStyles[tx.type];
 
           return (
             <div
               key={tx.id}
-              className="flex items-center justify-between gap-3 px-4 py-3"
+              className="flex items-center justify-between gap-3 rounded-2xl bg-gray-50 px-4 py-3.5 transition-colors hover:bg-gray-100"
             >
               <div className="flex items-center gap-3 min-w-0">
-                <div
-                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${style.iconBg}`}
-                >
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white shadow-sm shadow-black/[0.03]">
                   <TransactionIcon type={tx.type} />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-sm font-medium text-foreground truncate">
+                  <p className="text-sm font-semibold text-foreground truncate">
                     {tx.party}
                   </p>
                   <p className="text-xs text-muted-foreground truncate">

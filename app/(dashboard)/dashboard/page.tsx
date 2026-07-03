@@ -19,7 +19,7 @@ export default function DashboardPage() {
 
   return (
     <div className="p-8">
-      <div className="mx-auto w-full max-w-6xl">
+      <div className="mx-auto w-full max-w-5xl">
         <div>
           <h1 className="text-[22px] font-semibold tracking-tight">
             {getGreeting()}, {firstName}.
