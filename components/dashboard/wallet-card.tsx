@@ -39,6 +39,12 @@ export function WalletCard() {
         <Skeleton className="h-6 w-32 rounded-full" />
         <Skeleton className="h-12 w-64 rounded-xl" />
         <Skeleton className="h-14 w-full rounded-2xl" />
+        <Skeleton className="h-24 w-full rounded-2xl" />
+        <div className="grid h-80 grid-cols-3 gap-4">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <Skeleton key={index} className="h-full rounded-4xl" />
+          ))}
+        </div>
       </div>
     );
   }
@@ -52,7 +58,7 @@ export function WalletCard() {
     <div className="w-full">
       {/* Currency badge */}
       <div className="mb-6">
-        <div className="border border-border pl-1.5 pr-3 py-1 rounded-full w-fit flex items-center gap-2 bg-white">
+        <div className="border border-border pl-1.5 pr-3 py-1 rounded-full w-fit flex items-center gap-2">
           <div className="overflow-hidden shrink-0 relative">
             <Image
               src="https://purecatamphetamine.github.io/country-flag-icons/1x1/NG.svg"
@@ -79,7 +85,8 @@ export function WalletCard() {
 
         <button
           onClick={() => setVisible(!visible)}
-          className="p-1.5 rounded-full hover:bg-muted transition-colors cursor-pointer"
+          className="rounded-full p-1.5 transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 cursor-pointer"
+          aria-label={visible ? "Hide balance" : "Show balance"}
         >
           <HugeiconsIcon
             icon={visible ? ViewIcon : EyeOffIcon}
@@ -93,7 +100,7 @@ export function WalletCard() {
       {wallet?.accountNumber ? (
         <button
           onClick={handleCopy}
-          className="w-full flex items-center justify-between gap-3 rounded-2xl bg-gray-50 px-4 py-3 text-left transition-colors hover:bg-gray-100 active:scale-[0.99] cursor-pointer"
+          className="w-full flex items-center justify-between gap-3 rounded-2xl bg-gray-50 px-4 py-3 text-left transition-colors hover:bg-gray-100 active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 cursor-pointer"
         >
           <div className="min-w-0">
             <p className="font-mono text-base font-semibold tracking-tight text-foreground truncate">
@@ -107,7 +114,7 @@ export function WalletCard() {
             className={`flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs font-medium transition-colors ${
               copied
                 ? "bg-emerald-100 text-emerald-700"
-                : "bg-white text-muted-foreground border"
+                : "bg-white text-muted-foreground"
             }`}
           >
             <HugeiconsIcon icon={copied ? Tick01Icon : Copy01Icon} size={13} />
@@ -128,7 +135,7 @@ export function WalletCard() {
       )}
 
       {/* Weekly earnings */}
-      <div className="relative mt-6 overflow-hidden rounded-2xl border border-border p-4 bg-white shadow-sm">
+      <div className="relative mt-6 overflow-hidden rounded-2xl border border-border p-4">
         <svg
           className="pointer-events-none absolute -right-3 -bottom-4 opacity-[0.06]"
           width="120"
@@ -189,41 +196,41 @@ export function WalletCard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-4 h-32 mt-10">
-        <button className="flex h-full flex-col justify-between rounded-3xl bg-blue-600 p-5 text-left transition-colors hover:bg-blue-700 active:scale-[0.98] cursor-pointer">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15">
+      <div className="grid grid-cols-3 gap-4 h-80 mt-10">
+        <button className="flex h-full flex-col justify-between rounded-4xl bg-blue-600 p-5 text-left transition-colors hover:bg-blue-700 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 cursor-pointer">
+          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/15">
             <HugeiconsIcon
               icon={QrCode01Icon}
-              size={20}
+              size={24}
               className="text-white"
             />
           </div>
-          <p className="text-base font-semibold tracking-tight text-white">
+          <p className="text-lg ml-2 font-semibold tracking-tight text-white">
             Receive
           </p>
         </button>
 
-        <button className="flex h-full flex-col justify-between rounded-3xl bg-gray-50 p-5 text-left transition-colors hover:bg-gray-100 active:scale-[0.98] cursor-pointer">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
-            <ArrowUpRightIcon size={20} className="text-gray-700" />
+        <button className="flex h-full flex-col justify-between rounded-4xl bg-gray-50 p-5 text-left transition-colors hover:bg-gray-100 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 cursor-pointer">
+          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
+            <ArrowUpRightIcon size={24} className="text-gray-700" />
           </div>
-          <p className="text-base font-semibold tracking-tight text-foreground">
+          <p className="text-lg ml-2 font-semibold tracking-tight text-foreground">
             Send
           </p>
         </button>
 
         <button
           onClick={() => setWithdrawOpen(true)}
-          className="flex h-full flex-col justify-between rounded-3xl bg-gray-50 p-5 text-left transition-colors hover:bg-gray-100 active:scale-[0.98] cursor-pointer"
+          className="flex h-full flex-col justify-between rounded-4xl bg-gray-50 p-5 text-left transition-colors hover:bg-gray-100 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 cursor-pointer"
         >
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
+          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
             <HugeiconsIcon
               icon={MoneySend01Icon}
-              size={20}
+              size={24}
               className="text-gray-700"
             />
           </div>
-          <p className="text-base font-semibold tracking-tight text-foreground">
+          <p className="text-lg ml-2 font-semibold tracking-tight text-foreground">
             Withdraw
           </p>
         </button>
