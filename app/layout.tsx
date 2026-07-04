@@ -1,12 +1,5 @@
 import type { Metadata } from "next";
-import {
-  DM_Sans,
-  Geist,
-  Geist_Mono,
-  Google_Sans,
-  Inter,
-  Space_Grotesk,
-} from "next/font/google";
+import { DM_Sans, Inter } from "next/font/google";
 import { Toaster } from "@/components/ui/toast";
 import { Analytics } from "@vercel/analytics/next";
 import { Providers } from "@/lib/providers";
