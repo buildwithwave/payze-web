@@ -68,9 +68,12 @@ export function Sidebar() {
       {/* Top */}
       <div>
         <div className="px-3 mb-4">
-          <Link href="/dashboard" className="flex items-center gap-1.5">
+          <Link
+            href="/dashboard"
+            className="flex items-center gap-1.5 text-primary"
+          >
             <Image src="/logo.svg" alt="Payze" width={26} height={28} />
-            <span className="text-[22px] font-medium text-primary tracking-tight">
+            <span className="text-[22px] font-semibold text-primary tracking-tight">
               payze
             </span>
           </Link>
