@@ -62,8 +62,7 @@ export default function ProductsPage() {
   const [deleting, setDeleting] = useState<Product | null>(null);
 
   const categories = useMemo(
-    () =>
-      Array.from(new Set((products ?? []).map((p) => p.category))).sort(),
+    () => Array.from(new Set((products ?? []).map((p) => p.category))).sort(),
     [products],
   );
 
@@ -178,7 +177,7 @@ export default function ProductsPage() {
             </Button>
           </div>
         ) : (products ?? []).length === 0 ? (
-          <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-border py-20 text-center">
+          <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-border py-20 text-center">
             <div className="flex size-12 items-center justify-center rounded-full bg-gray-100">
               <HugeiconsIcon
                 icon={Package01Icon}
@@ -211,7 +210,7 @@ export default function ProductsPage() {
             </div>
           </div>
         ) : filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-border py-16 text-center">
+          <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border py-16 text-center">
             <p className="text-sm font-medium">Nothing matches your search</p>
             <p className="text-xs text-muted-foreground">
               Try a different name or clear the filters.
@@ -259,9 +258,7 @@ export default function ProductsPage() {
                   <td className="px-4 py-3 font-mono text-xs text-muted-foreground">
                     {product.barcode}
                   </td>
-                  <td
-                    className="px-4 py-3 text-right font-medium"
-                  >
+                  <td className="px-4 py-3 text-right font-medium">
                     {formatNaira(product.price)}
                   </td>
                   <td className="px-4 py-3">

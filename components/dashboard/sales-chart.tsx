@@ -42,7 +42,7 @@ function CustomTooltip({
 const timeframes = ["7D", "1M", "3M", "6M", "1Y"] as const;
 
 export function SalesChart() {
-  const [active, setActive] = useState<typeof timeframes[number]>("1Y");
+  const [active, setActive] = useState<(typeof timeframes)[number]>("1Y");
   const { data: trend, isLoading } = useSalesTrend(active);
 
   return (
@@ -74,12 +74,15 @@ export function SalesChart() {
       {isLoading ? (
         <Skeleton className="h-[280px] w-full rounded-lg" />
       ) : !trend || trend.points.length === 0 ? (
-        <div className="flex h-[280px] items-center justify-center text-muted-foreground text-sm font-medium border border-dashed border-border rounded-lg">
+        <div className="flex h-[280px] items-center justify-center text-muted-foreground text-sm font-medium border border-border rounded-lg">
           No sales recorded in this timeframe
         </div>
       ) : (
         <ResponsiveContainer width="100%" height={280}>
-          <LineChart data={trend.points} margin={{ top: 4, right: 4, bottom: 0, left: -20 }}>
+          <LineChart
+            data={trend.points}
+            margin={{ top: 4, right: 4, bottom: 0, left: -20 }}
+          >
             <CartesianGrid
               strokeDasharray="3 3"
               stroke="oklch(0.922 0 0)"

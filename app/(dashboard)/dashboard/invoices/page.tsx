@@ -99,7 +99,7 @@ export default function InvoicesPage() {
             </Button>
           </div>
         ) : (invoices ?? []).length === 0 ? (
-          <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-border py-20 text-center">
+          <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-border py-20 text-center">
             <div className="flex size-12 items-center justify-center rounded-full bg-gray-100">
               <HugeiconsIcon
                 icon={Invoice01Icon}
@@ -124,7 +124,7 @@ export default function InvoicesPage() {
             </Button>
           </div>
         ) : filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-border py-16 text-center">
+          <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border py-16 text-center">
             <p className="text-sm font-medium">Nothing matches your search</p>
             <Button variant="outline" size="sm" onClick={() => setSearch("")}>
               Clear search
@@ -172,9 +172,7 @@ export default function InvoicesPage() {
                   <td className="px-4 py-3 text-muted-foreground">
                     {paymentLabels[invoice.paymentMethod]}
                   </td>
-                  <td
-                    className="py-3 pl-4 text-right font-medium"
-                  >
+                  <td className="py-3 pl-4 text-right font-medium">
                     {formatNaira(invoice.total)}
                   </td>
                 </tr>

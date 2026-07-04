@@ -14,14 +14,22 @@ const rowStyles = {
   debit: { iconColor: "text-gray-700", amountColor: "text-foreground" },
 } as const;
 
-function TransactionIcon({ type, channel }: { type: "credit" | "debit"; channel: string }) {
+function TransactionIcon({
+  type,
+  channel,
+}: {
+  type: "credit" | "debit";
+  channel: string;
+}) {
   const { iconColor } = rowStyles[type];
 
   if (type === "credit") {
     return <ArrowDownLeftIcon size={17} weight="bold" className={iconColor} />;
   }
   if (channel === "withdrawal") {
-    return <HugeiconsIcon icon={MoneySend01Icon} size={17} className={iconColor} />;
+    return (
+      <HugeiconsIcon icon={MoneySend01Icon} size={17} className={iconColor} />
+    );
   }
   return <ArrowUpRightIcon size={17} weight="bold" className={iconColor} />;
 }
@@ -42,8 +50,8 @@ export function RecentTransactions() {
   }
 
   return (
-    <div className="mt-10 w-full animate-fade-in">
-      <div className="flex items-center justify-between mb-3">
+    <div className="mt-12 w-full animate-fade-in">
+      <div className="flex items-center justify-between mb-4">
         <p className="text-sm font-medium text-muted-foreground">
           Recent transactions
         </p>
@@ -57,7 +65,7 @@ export function RecentTransactions() {
       </div>
 
       {transactions.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-border py-8 text-center text-sm text-muted-foreground">
+        <div className="rounded-2xl border border-border py-8 text-center text-sm text-muted-foreground">
           No transactions recorded yet
         </div>
       ) : (
@@ -65,7 +73,9 @@ export function RecentTransactions() {
           {transactions.map((tx) => {
             const style = rowStyles[tx.type];
             const isCredit = tx.type === "credit";
-            const party = tx.counterparty || (isCredit ? "Customer payment" : "Transfer out");
+            const party =
+              tx.counterparty ||
+              (isCredit ? "Customer payment" : "Transfer out");
             const detail =
               tx.channel === "withdrawal"
                 ? "Bank Withdrawal"
@@ -96,7 +106,9 @@ export function RecentTransactions() {
                   <p className={`text-sm font-semibold ${style.amountColor}`}>
                     {isCredit ? "+" : "-"}₦{formatMoney(tx.amount)}
                   </p>
-                  <p className="text-xs text-muted-foreground">{formatDateTime(tx.createdAt)}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {formatDateTime(tx.createdAt)}
+                  </p>
                 </div>
               </div>
             );

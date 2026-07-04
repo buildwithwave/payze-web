@@ -25,7 +25,12 @@ export default function PaymentsPage() {
   const limit = 15;
 
   const typeParam = filter === "all" ? undefined : filter;
-  const { data: response, isLoading, isError, refetch } = useTransactions(typeParam, page, limit);
+  const {
+    data: response,
+    isLoading,
+    isError,
+    refetch,
+  } = useTransactions(typeParam, page, limit);
 
   const transactions = response?.data ?? [];
   const total = response?.total ?? 0;
@@ -41,7 +46,9 @@ export default function PaymentsPage() {
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-[22px] font-semibold tracking-tight">Transactions</h1>
+          <h1 className="text-[22px] font-semibold tracking-tight">
+            Transactions
+          </h1>
           <p className="text-sm text-muted-foreground">
             A ledger of all incoming sales and bank withdrawals.
           </p>
@@ -59,7 +66,7 @@ export default function PaymentsPage() {
                 "px-4 py-1.5 text-xs font-semibold rounded-md transition-all cursor-pointer capitalize",
                 filter === t
                   ? "bg-white text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
+                  : "text-muted-foreground hover:text-foreground",
               )}
             >
               {t === "all" ? "All" : t === "credit" ? "Credits" : "Withdrawals"}
@@ -82,16 +89,19 @@ export default function PaymentsPage() {
           </div>
         ) : isError ? (
           <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-destructive/20 bg-destructive/5 p-8 text-center">
-            <p className="text-sm font-semibold text-destructive">Couldn&apos;t load transactions</p>
+            <p className="text-sm font-semibold text-destructive">
+              Couldn&apos;t load transactions
+            </p>
             <Button variant="outline" size="sm" onClick={() => refetch()}>
               Try again
             </Button>
           </div>
         ) : transactions.length === 0 ? (
-          <div className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-border py-20 text-center">
+          <div className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-border py-20 text-center">
             <p className="text-sm font-medium">No transactions found</p>
             <p className="text-xs text-muted-foreground">
-              When sales are processed or withdrawals are made, they will appear here.
+              When sales are processed or withdrawals are made, they will appear
+              here.
             </p>
           </div>
         ) : (
@@ -122,7 +132,8 @@ export default function PaymentsPage() {
                         {formatDateTime(tx.createdAt)}
                       </td>
                       <td className="px-4 py-3 text-muted-foreground max-w-[200px] truncate">
-                        {tx.counterparty || (isCredit ? "Customer POS" : "Transfer Out")}
+                        {tx.counterparty ||
+                          (isCredit ? "Customer POS" : "Transfer Out")}
                       </td>
                       <td className="px-4 py-3 text-muted-foreground">
                         {channelLabels[tx.channel] || tx.channel}
@@ -131,7 +142,8 @@ export default function PaymentsPage() {
                         <span
                           className={cn(
                             "inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold border",
-                            statusColors[tx.status] || "bg-gray-50 border-gray-200 text-gray-700"
+                            statusColors[tx.status] ||
+                              "bg-gray-50 border-gray-200 text-gray-700",
                           )}
                         >
                           {tx.status}
@@ -140,10 +152,11 @@ export default function PaymentsPage() {
                       <td
                         className={cn(
                           "py-3 pl-4 text-right font-semibold",
-                          isCredit ? "text-blue-600" : "text-foreground"
+                          isCredit ? "text-blue-600" : "text-foreground",
                         )}
                       >
-                        {isCredit ? "+" : "-"}{formatNaira(tx.amount)}
+                        {isCredit ? "+" : "-"}
+                        {formatNaira(tx.amount)}
                       </td>
                     </tr>
                   );
