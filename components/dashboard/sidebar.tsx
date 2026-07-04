@@ -18,7 +18,11 @@ import { StoreSwitcher } from "@/components/dashboard/store-switcher";
 
 const mainNav = [
   { label: "Dashboard", href: "/dashboard", icon: Home01Icon },
-  { label: "Point of Sale", href: "/dashboard/pos", icon: ShoppingBasket01Icon },
+  {
+    label: "Point of Sale",
+    href: "/dashboard/pos",
+    icon: ShoppingBasket01Icon,
+  },
   // { label: "Stores", href: "/dashboard/stores", icon: Store01Icon },
   { label: "Products", href: "/dashboard/products", icon: Package01Icon },
   { label: "Invoices", href: "/dashboard/invoices", icon: Invoice01Icon },
@@ -65,9 +69,9 @@ export function Sidebar() {
       <div>
         <div className="px-3 mb-4">
           <Link href="/dashboard" className="flex items-center gap-1.5">
-            <Image src="/logo.svg" alt="Payzee" width={26} height={28} />
+            <Image src="/logo.svg" alt="Payze" width={26} height={28} />
             <span className="text-[22px] font-medium text-primary tracking-tight">
-              Payze
+              payze
             </span>
           </Link>
         </div>
