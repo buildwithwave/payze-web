@@ -8,6 +8,7 @@ import {
   Space_Grotesk,
 } from "next/font/google";
 import { Toaster } from "@/components/ui/toast";
+import { Analytics } from "@vercel/analytics/react";
 import { Providers } from "@/lib/providers";
 import "./globals.css";
 
@@ -41,6 +42,7 @@ export default function RootLayout({
           {children}
           <Toaster />
         </Providers>
+        <Analytics />
       </body>
     </html>
   );
