@@ -8,7 +8,7 @@ import {
   Space_Grotesk,
 } from "next/font/google";
 import { Toaster } from "@/components/ui/toast";
-import { Analytics } from "@vercel/analytics/react";
+import { Analytics } from "@vercel/analytics/next";
 import { Providers } from "@/lib/providers";
 import "./globals.css";
 
@@ -33,10 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${inter.className} h-full antialiased`}
-    >
+    <html lang="en" className={`${inter.className} h-full antialiased`}>
       <body className="min-h-full flex flex-col ">
         <Providers>
           {children}
