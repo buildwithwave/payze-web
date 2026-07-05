@@ -23,7 +23,9 @@ import { Receipt } from "@/components/pos/receipt";
 import { toast } from "sonner";
 import { Invoice } from "@/services/catalog";
 
-export default function ReceiptLookupPage() {
+import { Suspense } from "react";
+
+function ReceiptLookupContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -190,5 +192,13 @@ export default function ReceiptLookupPage() {
         Powered by <span className="font-semibold text-foreground">Payze</span>
       </footer>
     </div>
+  );
+}
+
+export default function ReceiptLookupPage() {
+  return (
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center">Loading...</div>}>
+      <ReceiptLookupContent />
+    </Suspense>
   );
 }

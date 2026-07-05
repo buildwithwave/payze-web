@@ -20,7 +20,7 @@ import { PaymentDialog } from "@/components/pos/payment-dialog";
 import { ReceiptDialog } from "@/components/pos/receipt-dialog";
 import { CameraScannerDialog } from "@/components/pos/camera-scanner-dialog";
 import { useProducts, useSeedProducts } from "@/hooks/use-products";
-import { useCheckout } from "@/hooks/use-invoices";
+import { useCheckout, useNombaCheckout } from "@/hooks/use-invoices";
 import { useUser } from "@/hooks/use-auth";
 import { Invoice, PaymentMethod, Product } from "@/services/catalog";
 import { formatMoney } from "@/lib/format";
@@ -170,24 +170,27 @@ export default function PosPage() {
   );
   const total = subtotal - Math.min(Number(discount) || 0, subtotal);
 
+  const nombaCheckout = useNombaCheckout();
+
   const handleConfirmPayment = (
     method: PaymentMethod,
     amountTendered?: number,
   ) => {
-    checkout.mutate(
-      {
-        items: cart.map(({ product, quantity }) => ({
-          productId: product.id,
-          name: product.name,
-          price: product.price,
-          quantity,
-        })),
-        discount: Math.min(Number(discount) || 0, subtotal),
-        paymentMethod: method,
-        amountTendered,
-        customerName,
-      },
-      {
+    const payload = {
+      items: cart.map(({ product, quantity }) => ({
+        productId: product.id,
+        name: product.name,
+        price: product.price,
+        quantity,
+      })),
+      discount: Math.min(Number(discount) || 0, subtotal),
+      paymentMethod: method,
+      amountTendered,
+      customerName,
+    };
+
+    if (method === "cash") {
+      checkout.mutate(payload, {
         onSuccess: (invoice) => {
           setPaymentOpen(false);
           setCompletedInvoice(invoice);
@@ -195,8 +198,20 @@ export default function PosPage() {
           setCustomerName("");
           setDiscount("");
         },
-      },
-    );
+      });
+    } else {
+      nombaCheckout.mutate(payload, {
+        onSuccess: (data) => {
+          setPaymentOpen(false);
+          setCart([]);
+          setCustomerName("");
+          setDiscount("");
+          // Open Nomba Checkout Link in a new tab
+          window.open(data.checkoutLink, "_blank");
+          toast.success("Please complete the payment in the new tab");
+        },
+      });
+    }
   };
 
   return (

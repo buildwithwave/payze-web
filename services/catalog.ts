@@ -153,6 +153,22 @@ export const catalogService = {
     return res.data;
   },
 
+  createNombaCheckout: async (storeId: string, payload: CheckoutPayload): Promise<{ invoiceId: string, checkoutLink: string, orderReference: string }> => {
+    const items = payload.items.map((item) => ({
+      productId: item.productId!,
+      quantity: item.quantity,
+    }));
+
+    const res = await api.post("/checkout/session", {
+      storeId,
+      items,
+      discount: payload.discount,
+      customerName: payload.customerName || undefined,
+      paymentMethod: payload.paymentMethod,
+    });
+    return res.data;
+  },
+
   sendReceipt: async (
     invoiceId: string,
     payload: { channel: "email" | "whatsapp"; destination: string }

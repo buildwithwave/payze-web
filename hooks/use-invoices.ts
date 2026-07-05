@@ -43,3 +43,22 @@ export function useCheckout() {
     },
   });
 }
+
+export function useNombaCheckout() {
+  const queryClient = useQueryClient();
+  const { activeStoreId } = useStore();
+
+  return useMutation({
+    mutationFn: (payload: CheckoutPayload) =>
+      catalogService.createNombaCheckout(activeStoreId!, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["invoices", activeStoreId] });
+      queryClient.invalidateQueries({ queryKey: ["products", activeStoreId] });
+      queryClient.invalidateQueries({ queryKey: ["transactions", activeStoreId] });
+      toast.success("Checkout link generated");
+    },
+    onError: (error) => {
+      toast.error("Checkout failed", getErrorMessage(error));
+    },
+  });
+}
