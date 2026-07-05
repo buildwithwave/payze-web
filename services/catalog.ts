@@ -152,4 +152,25 @@ export const catalogService = {
     });
     return res.data;
   },
+
+  sendReceipt: async (
+    invoiceId: string,
+    payload: { channel: "email" | "whatsapp"; destination: string }
+  ): Promise<{ sent: boolean; channel: string; whatsappUrl?: string }> => {
+    const res = await api.post(`/invoices/${invoiceId}/send-receipt`, payload);
+    return res.data;
+  },
+
+  lookupInvoice: async (code: string, storeId: string): Promise<Invoice & { storeName: string }> => {
+    // Note: This endpoint is public, we use the regular api instance (it handles auth optionality)
+    const res = await api.get(`/invoices/lookup/${code}`, {
+      params: { storeId }
+    });
+    return res.data;
+  },
+
+  getPublicStores: async (): Promise<{ id: string; name: string }[]> => {
+    const res = await api.get(`/stores/public`);
+    return res.data;
+  }
 };
