@@ -9,26 +9,17 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/compone
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { WalletCardSkeleton } from "@/components/dashboard/wallet-card";
 
 function DashboardStoreLoading() {
   return (
     <div className="p-8">
-      <div className="mx-auto mt-10 w-full max-w-4xl space-y-6">
+      <div className="mx-auto mt-10 w-full max-w-4xl space-y-8">
         <div className="space-y-2">
           <Skeleton className="h-7 w-48 rounded-lg" />
-          <Skeleton className="h-4 w-64 rounded-lg" />
+          <Skeleton className="h-4 w-64 rounded" />
         </div>
-        <div className="space-y-6">
-          <Skeleton className="h-6 w-32 rounded-full" />
-          <Skeleton className="h-12 w-64 rounded-xl" />
-          <Skeleton className="h-14 w-full rounded-2xl" />
-          <Skeleton className="h-24 w-full rounded-2xl" />
-          <div className="grid h-80 grid-cols-3 gap-4">
-            {Array.from({ length: 3 }).map((_, index) => (
-              <Skeleton key={index} className="h-full rounded-4xl" />
-            ))}
-          </div>
-        </div>
+        <WalletCardSkeleton />
       </div>
     </div>
   );

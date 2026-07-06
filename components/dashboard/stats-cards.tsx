@@ -44,7 +44,16 @@ export function StatsCards() {
     return (
       <div className="grid grid-cols-4 gap-4 mt-6">
         {Array.from({ length: 4 }).map((_, i) => (
-          <Skeleton key={i} className="h-28 w-full rounded-xl" />
+          <div
+            key={i}
+            className="rounded-xl border border-border p-5 flex flex-col justify-between gap-6 bg-white shadow-sm"
+          >
+            <div className="flex items-center gap-2.5">
+              <Skeleton className="size-7 rounded-md" />
+              <Skeleton className="h-4 w-16 rounded" />
+            </div>
+            <Skeleton className="h-7 w-12 rounded-lg" />
+          </div>
         ))}
       </div>
     );

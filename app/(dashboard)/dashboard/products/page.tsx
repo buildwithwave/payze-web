@@ -25,7 +25,7 @@ import {
 import { ProductFormSheet } from "@/components/products/product-form-sheet";
 import { DeleteProductDialog } from "@/components/products/delete-product-dialog";
 import { ProductThumb } from "@/components/products/product-thumb";
-import { useProducts, useSeedProducts } from "@/hooks/use-products";
+import { useProducts } from "@/hooks/use-products";
 import { Product } from "@/services/catalog";
 import { formatNaira } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -53,7 +53,6 @@ function StockIndicator({ product }: { product: Product }) {
 
 export default function ProductsPage() {
   const { data: products, isLoading, isError, refetch } = useProducts();
-  const seedProducts = useSeedProducts();
 
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
@@ -159,9 +158,29 @@ export default function ProductsPage() {
       {/* Content */}
       <div className="mt-6">
         {isLoading ? (
-          <div className="space-y-2">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Skeleton key={i} className="h-14 w-full rounded-xl" />
+          <div role="status" aria-label="Loading products">
+            <div className="flex items-center gap-4 border-b border-border py-2.5">
+              {["w-16", "w-14", "w-16", "w-10", "w-10"].map((w, i) => (
+                <Skeleton
+                  key={i}
+                  className={`h-3 rounded ${w} ${i === 3 ? "ml-auto" : ""}`}
+                />
+              ))}
+            </div>
+            {["w-40", "w-32", "w-44", "w-36", "w-28"].map((nameWidth, i) => (
+              <div
+                key={i}
+                className="flex items-center gap-4 border-b border-border/60 py-3 last:border-0"
+              >
+                <div className="flex items-center gap-3">
+                  <Skeleton className="size-9 rounded-lg" />
+                  <Skeleton className={`h-3.5 rounded ${nameWidth}`} />
+                </div>
+                <Skeleton className="ml-auto h-3.5 w-20 rounded" />
+                <Skeleton className="h-3.5 w-28 rounded" />
+                <Skeleton className="h-3.5 w-16 rounded" />
+                <Skeleton className="h-3.5 w-14 rounded" />
+              </div>
             ))}
           </div>
         ) : isError ? (
@@ -193,21 +212,10 @@ export default function ProductsPage() {
                 screen.
               </p>
             </div>
-            <div className="flex items-center gap-2">
-              <Button size="sm" className="h-9 gap-1.5 px-4" onClick={openAdd}>
-                <HugeiconsIcon icon={PlusSignIcon} size={14} />
-                Add product
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-9 px-4"
-                loading={seedProducts.isPending}
-                onClick={() => seedProducts.mutate()}
-              >
-                Load sample products
-              </Button>
-            </div>
+            <Button size="sm" className="h-9 gap-1.5 px-4" onClick={openAdd}>
+              <HugeiconsIcon icon={PlusSignIcon} size={14} />
+              Add product
+            </Button>
           </div>
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border py-16 text-center">

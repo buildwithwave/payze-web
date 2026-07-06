@@ -46,22 +46,8 @@ export function useCheckEmail() {
 }
 
 export function useRegister() {
-  const router = useRouter();
-
   return useMutation({
     mutationFn: (data: RegisterPayload) => authService.register(data),
-    onSuccess: (res) => {
-      const token = res.data?.session?.access_token || res.data?.token;
-      if (token) {
-        localStorage.setItem("token", token);
-        window.dispatchEvent(new Event("payze-auth-token-changed"));
-        toast.success("Account created!");
-        router.push("/dashboard");
-      } else {
-        toast.success("Account created!", "Please log in to continue");
-        router.push("/login");
-      }
-    },
     onError: (error) => {
       toast.error("Registration failed", getErrorMessage(error));
     },

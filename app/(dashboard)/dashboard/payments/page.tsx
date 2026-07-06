@@ -82,9 +82,25 @@ export default function PaymentsPage() {
       {/* Table Content */}
       <div className="mt-6">
         {isLoading ? (
-          <div className="space-y-2">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Skeleton key={i} className="h-14 w-full rounded-xl" />
+          <div role="status" aria-label="Loading transactions">
+            <div className="flex items-center gap-4 border-b border-border py-2.5">
+              {["w-16", "w-20", "w-24", "w-14", "w-12"].map((w, i) => (
+                <Skeleton key={i} className={`h-3 rounded ${w}`} />
+              ))}
+              <Skeleton className="ml-auto h-3 w-14 rounded" />
+            </div>
+            {["w-28", "w-24", "w-32", "w-28", "w-24"].map((refWidth, i) => (
+              <div
+                key={i}
+                className="flex items-center gap-4 border-b border-border/60 py-3.5 last:border-0"
+              >
+                <Skeleton className={`h-3.5 rounded ${refWidth}`} />
+                <Skeleton className="h-3.5 w-28 rounded" />
+                <Skeleton className="h-3.5 w-32 rounded" />
+                <Skeleton className="h-3.5 w-20 rounded" />
+                <Skeleton className="h-5 w-16 rounded-full" />
+                <Skeleton className="ml-auto h-3.5 w-20 rounded" />
+              </div>
             ))}
           </div>
         ) : isError ? (

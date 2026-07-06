@@ -19,7 +19,7 @@ import { CartPanel, CartItem } from "@/components/pos/cart-panel";
 import { PaymentDialog } from "@/components/pos/payment-dialog";
 import { ReceiptDialog } from "@/components/pos/receipt-dialog";
 import { CameraScannerDialog } from "@/components/pos/camera-scanner-dialog";
-import { useProducts, useSeedProducts } from "@/hooks/use-products";
+import { useProducts } from "@/hooks/use-products";
 import { useCheckout, useNombaCheckout } from "@/hooks/use-invoices";
 import { useUser } from "@/hooks/use-auth";
 import { Invoice, PaymentMethod, Product } from "@/services/catalog";
@@ -29,7 +29,6 @@ import { cn } from "@/lib/utils";
 export default function PosPage() {
   const { data: products, isLoading, isError, refetch } = useProducts();
   const { data: user } = useUser();
-  const seedProducts = useSeedProducts();
   const checkout = useCheckout();
 
   const [search, setSearch] = useState("");
@@ -329,25 +328,15 @@ export default function PosPage() {
                   Add products to your catalogue to start selling.
                 </p>
               </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  size="sm"
-                  className="h-9 gap-1.5 px-4"
-                  render={<Link href="/dashboard/products" />}
-                >
-                  <HugeiconsIcon icon={PlusSignIcon} size={14} />
-                  Add products
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-9 px-4"
-                  loading={seedProducts.isPending}
-                  onClick={() => seedProducts.mutate()}
-                >
-                  Load sample products
-                </Button>
-              </div>
+              <Button
+                size="sm"
+                className="h-9 gap-1.5 px-4"
+                render={<Link href="/dashboard/products" />}
+                nativeButton={false}
+              >
+                <HugeiconsIcon icon={PlusSignIcon} size={14} />
+                Add products
+              </Button>
             </div>
           ) : filtered.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center gap-3 text-center">

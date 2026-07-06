@@ -1,9 +1,10 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   BarCode02Icon,
+  Camera01Icon,
   Image01Icon,
   Cancel01Icon,
 } from "@hugeicons/core-free-icons";
@@ -27,6 +28,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { useCreateProduct, useUpdateProduct } from "@/hooks/use-products";
+import { CameraScannerDialog } from "@/components/pos/camera-scanner-dialog";
 import {
   DEFAULT_CATEGORIES,
   generateBarcode,
@@ -39,8 +41,13 @@ interface FormErrors {
   name?: string;
   category?: string;
   price?: string;
+  costPrice?: string;
   stock?: string;
+  barcode?: string;
 }
+
+// Covers EAN-8 through EAN-13/ITF-14 plus alphanumeric Code 39/128 SKUs.
+const BARCODE_PATTERN = /^[A-Za-z0-9-]{8,14}$/;
 
 /** Downscale an uploaded image so it stays small enough for local storage. */
 function fileToThumbnail(file: File): Promise<string> {
@@ -103,7 +110,14 @@ function ProductFormBody({
   const [image, setImage] = useState<string | undefined>(product?.image);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
+  const [scannerOpen, setScannerOpen] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  const handleBarcodeScan = useCallback((code: string) => {
+    setBarcode(code);
+    setScannerOpen(false);
+    return { ok: true, label: "Barcode captured" };
+  }, []);
 
   const allCategories = Array.from(
     new Set([...DEFAULT_CATEGORIES, ...categories]),
@@ -128,15 +142,25 @@ function ProductFormBody({
   const handleSubmit = () => {
     const resolvedCategory = addingCategory ? newCategory.trim() : category;
     const priceNum = Number(price);
+    const costNum = Number(costPrice);
     const stockNum = Number(stock);
+    const trimmedBarcode = barcode.trim();
 
     const nextErrors: FormErrors = {};
     if (!name.trim()) nextErrors.name = "Give the product a name";
     if (!resolvedCategory) nextErrors.category = "Pick a category";
     if (!price || isNaN(priceNum) || priceNum <= 0)
       nextErrors.price = "Enter a price above ₦0";
+    if (costPrice !== "") {
+      if (isNaN(costNum) || costNum < 0)
+        nextErrors.costPrice = "Enter a valid cost price";
+      else if (!nextErrors.price && costNum > priceNum)
+        nextErrors.costPrice = "Cost price is above the selling price — you'd lose money on every sale";
+    }
     if (stock === "" || isNaN(stockNum) || stockNum < 0)
       nextErrors.stock = "Enter how many are in stock";
+    if (trimmedBarcode && !BARCODE_PATTERN.test(trimmedBarcode))
+      nextErrors.barcode = "Barcodes are 8–14 letters or digits, no spaces";
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
 
@@ -147,7 +171,7 @@ function ProductFormBody({
       costPrice: costPrice ? Number(costPrice) : undefined,
       stock: stockNum,
       lowStockThreshold: Number(lowStock) || 0,
-      barcode: barcode.trim() || generateBarcode(),
+      barcode: trimmedBarcode || generateBarcode(),
       image,
     };
 
@@ -299,8 +323,14 @@ function ProductFormBody({
               value={costPrice}
               onChange={(e) => setCostPrice(e.target.value)}
               placeholder="Optional"
+              aria-invalid={!!errors.costPrice}
             />
           </div>
+          {errors.costPrice && (
+            <p className="col-span-2 -mt-2 text-xs text-destructive">
+              {errors.costPrice}
+            </p>
+          )}
         </div>
 
         {/* Stock */}
@@ -346,7 +376,18 @@ function ProductFormBody({
               placeholder="Scan or type a code"
               className="font-mono"
               autoComplete="off"
+              aria-invalid={!!errors.barcode}
             />
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-8 shrink-0 gap-1.5"
+              onClick={() => setScannerOpen(true)}
+            >
+              <HugeiconsIcon icon={Camera01Icon} size={14} />
+              Scan
+            </Button>
             <Button
               type="button"
               variant="outline"
@@ -358,11 +399,22 @@ function ProductFormBody({
               Generate
             </Button>
           </div>
-          <p className="text-xs text-muted-foreground">
-            Leave empty and we&apos;ll generate one for you.
-          </p>
+          {errors.barcode ? (
+            <p className="text-xs text-destructive">{errors.barcode}</p>
+          ) : (
+            <p className="text-xs text-muted-foreground">
+              Scan a barcode, or leave empty and we&apos;ll generate one for
+              you.
+            </p>
+          )}
         </div>
       </SheetBody>
+
+      <CameraScannerDialog
+        open={scannerOpen}
+        onOpenChange={setScannerOpen}
+        onScan={handleBarcodeScan}
+      />
 
       <SheetFooter>
         <Button

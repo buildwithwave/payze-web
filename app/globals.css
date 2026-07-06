@@ -117,6 +117,39 @@
   --sidebar-ring: oklch(0.65 0.2 264);
 }
 
+/* Skeleton shimmer — a soft highlight sweeping across every loader.
+   Falls back to a static block when the user prefers reduced motion. */
+@keyframes skeleton-shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-slot="skeleton"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      oklch(1 0 0 / 50%),
+      transparent
+    );
+    animation: skeleton-shimmer 1.6s ease-in-out infinite;
+  }
+
+  .dark [data-slot="skeleton"]::after {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      oklch(1 0 0 / 7%),
+      transparent
+    );
+  }
+}
+
 @media print {
   body * {
     visibility: hidden;

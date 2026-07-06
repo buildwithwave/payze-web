@@ -38,13 +38,41 @@ export function RecentTransactions() {
   const { data: response, isLoading } = useTransactions(undefined, 1, 5);
   const transactions = response?.data ?? [];
 
+  // Varied bar widths read as real rows instead of uniform slabs.
+  const skeletonWidths = [
+    { party: "w-32", amount: "w-16" },
+    { party: "w-40", amount: "w-14" },
+    { party: "w-28", amount: "w-20" },
+    { party: "w-36", amount: "w-16" },
+  ];
+
   if (isLoading) {
     return (
-      <div className="mt-10 w-full space-y-3">
-        <Skeleton className="h-5 w-32 rounded" />
-        {Array.from({ length: 4 }).map((_, i) => (
-          <Skeleton key={i} className="h-16 w-full rounded-2xl" />
-        ))}
+      <div className="mt-12 w-full">
+        <div className="mb-4 flex items-center justify-between">
+          <Skeleton className="h-4 w-36 rounded" />
+          <Skeleton className="h-4 w-14 rounded" />
+        </div>
+        <div className="space-y-2">
+          {skeletonWidths.map((w, i) => (
+            <div
+              key={i}
+              className="flex items-center justify-between gap-3 rounded-2xl bg-gray-50 px-4 py-3.5"
+            >
+              <div className="flex items-center gap-3">
+                <Skeleton className="size-10 rounded-full bg-gray-200/70" />
+                <div className="space-y-1.5">
+                  <Skeleton className={`h-3.5 rounded bg-gray-200/60 ${w.party}`} />
+                  <Skeleton className="h-3 w-24 rounded bg-gray-200/60" />
+                </div>
+              </div>
+              <div className="flex flex-col items-end space-y-1.5">
+                <Skeleton className={`h-3.5 rounded bg-gray-200/60 ${w.amount}`} />
+                <Skeleton className="h-3 w-24 rounded bg-gray-200/60" />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }

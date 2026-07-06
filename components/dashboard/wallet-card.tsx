@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   ViewIcon,
@@ -22,6 +23,7 @@ import { formatMoney } from "@/lib/format";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function WalletCard() {
+  const router = useRouter();
   const [visible, setVisible] = useState(true);
   const [copied, setCopied] = useState(false);
   const [withdrawOpen, setWithdrawOpen] = useState(false);
@@ -38,19 +40,7 @@ export function WalletCard() {
   };
 
   if (loadingWallet) {
-    return (
-      <div className="w-full space-y-6">
-        <Skeleton className="h-6 w-32 rounded-full" />
-        <Skeleton className="h-12 w-64 rounded-xl" />
-        <Skeleton className="h-14 w-full rounded-2xl" />
-        <Skeleton className="h-24 w-full rounded-2xl" />
-        <div className="grid h-80 grid-cols-3 gap-4">
-          {Array.from({ length: 3 }).map((_, index) => (
-            <Skeleton key={index} className="h-full rounded-4xl" />
-          ))}
-        </div>
-      </div>
-    );
+    return <WalletCardSkeleton />;
   }
 
   const balance = wallet ? formatMoney(wallet.balance) : "0.00";
@@ -201,7 +191,10 @@ export function WalletCard() {
       </div>
 
       <div className="grid grid-cols-3 gap-4 h-80 mt-10">
-        <button className="flex h-full flex-col justify-between rounded-4xl bg-blue-600 p-5 text-left transition-colors hover:bg-blue-700 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 cursor-pointer">
+        <button
+          onClick={() => router.push("/dashboard/pos")}
+          className="flex h-full flex-col justify-between rounded-4xl bg-blue-600 p-5 text-left transition-colors hover:bg-blue-700 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 cursor-pointer"
+        >
           <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/15">
             <HugeiconsIcon
               icon={QrCode01Icon}
@@ -245,6 +238,55 @@ export function WalletCard() {
         onOpenChange={setWithdrawOpen}
         availableBalance={wallet?.balance ?? 0}
       />
+    </div>
+  );
+}
+
+/** Mirrors the wallet card layout so nothing jumps when data lands. */
+export function WalletCardSkeleton() {
+  return (
+    <div className="w-full">
+      {/* Currency badge */}
+      <Skeleton className="mb-6 h-7 w-36 rounded-full" />
+
+      {/* Balance */}
+      <div className="mb-6 flex items-baseline gap-2">
+        <Skeleton className="h-9 w-44 rounded-lg" />
+        <Skeleton className="size-7 rounded-full" />
+      </div>
+
+      {/* Account info row */}
+      <div className="flex items-center justify-between gap-3 rounded-2xl bg-gray-50 px-4 py-3">
+        <div className="space-y-1.5">
+          <Skeleton className="h-4 w-36 rounded bg-gray-200/60" />
+          <Skeleton className="h-3 w-24 rounded bg-gray-200/60" />
+        </div>
+        <Skeleton className="h-6 w-14 rounded-full bg-gray-200/60" />
+      </div>
+
+      {/* Earned this week */}
+      <div className="mt-4 rounded-2xl bg-gray-50 p-4">
+        <div className="flex items-center justify-between">
+          <div className="space-y-2">
+            <Skeleton className="h-3 w-24 rounded bg-gray-200/60" />
+            <Skeleton className="h-7 w-28 rounded-lg bg-gray-200/60" />
+          </div>
+          <Skeleton className="h-6 w-14 rounded-full bg-gray-200/60" />
+        </div>
+      </div>
+
+      {/* Quick actions */}
+      <div className="mt-10 grid h-80 grid-cols-3 gap-4">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div
+            key={i}
+            className="flex h-full flex-col justify-between rounded-4xl bg-gray-50 p-5"
+          >
+            <Skeleton className="size-14 rounded-full bg-gray-200/70" />
+            <Skeleton className="ml-2 h-5 w-20 rounded" />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

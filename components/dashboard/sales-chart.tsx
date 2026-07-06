@@ -72,7 +72,21 @@ export function SalesChart() {
       </div>
 
       {isLoading ? (
-        <Skeleton className="h-[280px] w-full rounded-lg" />
+        <div
+          className="flex h-[280px] items-end gap-3 pt-6"
+          role="status"
+          aria-label="Loading sales chart"
+        >
+          {[40, 65, 50, 80, 60, 95, 70, 55, 85, 45, 75, 60].map(
+            (height, i) => (
+              <Skeleton
+                key={i}
+                className="w-full rounded-t-md rounded-b-none"
+                style={{ height: `${height}%` }}
+              />
+            ),
+          )}
+        </div>
       ) : !trend || trend.points.length === 0 ? (
         <div className="flex h-[280px] items-center justify-center text-muted-foreground text-sm font-medium border border-border rounded-lg">
           No sales recorded in this timeframe

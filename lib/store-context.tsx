@@ -14,7 +14,7 @@ interface StoreContextType {
   setActiveStoreId: (id: string) => void;
   isLoading: boolean;
   createStore: {
-    mutate: (name: string) => void;
+    mutate: (name: string, options?: { onSuccess?: () => void }) => void;
     isPending: boolean;
   };
 }

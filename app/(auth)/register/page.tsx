@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,18 +10,23 @@ import { Button } from "@/components/ui/button";
 import { useCheckEmail, useRegister } from "@/hooks/use-auth";
 import { toast } from "@/components/ui/toast";
 import { PasswordStrength } from "@/components/ui/password-strength";
+import { SuccessCheck } from "@/components/ui/success-check";
+import { useStore } from "@/lib/store-context";
 
 export default function RegisterPage() {
-  const [step, setStep] = useState<1 | 2>(1);
+  const router = useRouter();
+  const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [businessName, setBusinessName] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [storeName, setStoreName] = useState("");
 
   const checkEmail = useCheckEmail();
   const register = useRegister();
+  const { createStore } = useStore();
 
   const handleEmailSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,8 +46,37 @@ export default function RegisterPage() {
 
   const handleRegisterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    register.mutate({ email, firstName, lastName, businessName, phone, password });
+    register.mutate(
+      { email, firstName, lastName, businessName, phone, password },
+      {
+        onSuccess: (res) => {
+          const token = res.data?.session?.access_token || res.data?.token;
+          if (token) {
+            localStorage.setItem("token", token);
+            window.dispatchEvent(new Event("payze-auth-token-changed"));
+            setStoreName(businessName);
+            setStep(3);
+          } else {
+            toast.success("Account created!", "Please log in to continue");
+            router.push("/login");
+          }
+        },
+      }
+    );
   };
+
+  const handleStoreSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const name = storeName.trim();
+    if (!name) return;
+    createStore.mutate(name, { onSuccess: () => setStep(4) });
+  };
+
+  useEffect(() => {
+    if (step !== 4) return;
+    const timer = setTimeout(() => router.push("/dashboard"), 2200);
+    return () => clearTimeout(timer);
+  }, [step, router]);
 
   return (
     <div className="flex flex-1 items-center justify-center px-6">
@@ -106,7 +141,7 @@ export default function RegisterPage() {
                 .
               </p>
             </motion.div>
-          ) : (
+          ) : step === 2 ? (
             <motion.div
               key="step-2"
               initial={{ opacity: 0, y: 12 }}
@@ -207,6 +242,73 @@ export default function RegisterPage() {
                   Back
                 </button>
               </form>
+            </motion.div>
+          ) : step === 3 ? (
+            <motion.div
+              key="step-3"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.25, ease: "easeInOut" }}
+              className="space-y-6"
+            >
+              <div className="space-y-1">
+                <h1 className="text-2xl font-semibold tracking-tight">
+                  Create your store
+                </h1>
+                <p className="text-sm text-muted-foreground">
+                  We&apos;ve used your business name below. You can change it
+                  anytime.
+                </p>
+              </div>
+
+              <form action="#" onSubmit={handleStoreSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="storeName">Store name</Label>
+                  <Input
+                    id="storeName"
+                    className="h-10"
+                    placeholder="e.g., Onigbinde Stores"
+                    value={storeName}
+                    onChange={(e) => setStoreName(e.target.value)}
+                    autoFocus
+                    required
+                  />
+                </div>
+
+                <Button
+                  type="submit"
+                  className="w-full"
+                  loading={createStore.isPending}
+                  disabled={!storeName.trim() || createStore.isPending}
+                >
+                  Create store
+                </Button>
+              </form>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="step-4"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25, ease: "easeInOut" }}
+              className="space-y-8 text-center"
+            >
+              <SuccessCheck />
+
+              <div className="space-y-1.5">
+                <h1 className="text-2xl font-semibold tracking-tight">
+                  You&apos;re all set
+                </h1>
+                <p className="text-sm text-muted-foreground">
+                  Your account and store are ready. Taking you to your
+                  dashboard&hellip;
+                </p>
+              </div>
+
+              <Button className="w-full" onClick={() => router.push("/dashboard")}>
+                Go to dashboard
+              </Button>
             </motion.div>
           )}
         </AnimatePresence>

@@ -54,6 +54,7 @@ export default function InvoicesPage() {
           size="sm"
           className="h-9 gap-1.5 px-4"
           render={<Link href="/dashboard/pos" />}
+          nativeButton={false}
         >
           <HugeiconsIcon icon={ShoppingBasket01Icon} size={14} />
           New sale
@@ -80,9 +81,25 @@ export default function InvoicesPage() {
       {/* Content */}
       <div className="mt-6">
         {isLoading ? (
-          <div className="space-y-2">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Skeleton key={i} className="h-14 w-full rounded-xl" />
+          <div role="status" aria-label="Loading invoices">
+            <div className="flex items-center gap-4 border-b border-border py-2.5">
+              {["w-14", "w-10", "w-20", "w-12", "w-16"].map((w, i) => (
+                <Skeleton key={i} className={`h-3 rounded ${w}`} />
+              ))}
+              <Skeleton className="ml-auto h-3 w-12 rounded" />
+            </div>
+            {["w-24", "w-28", "w-20", "w-28", "w-24"].map((refWidth, i) => (
+              <div
+                key={i}
+                className="flex items-center gap-4 border-b border-border/60 py-3.5 last:border-0"
+              >
+                <Skeleton className={`h-3.5 rounded ${refWidth}`} />
+                <Skeleton className="h-3.5 w-28 rounded" />
+                <Skeleton className="h-3.5 w-32 rounded" />
+                <Skeleton className="h-3.5 w-12 rounded" />
+                <Skeleton className="h-5 w-16 rounded-full" />
+                <Skeleton className="ml-auto h-3.5 w-20 rounded" />
+              </div>
             ))}
           </div>
         ) : isError ? (
@@ -117,6 +134,7 @@ export default function InvoicesPage() {
               size="sm"
               className="h-9 gap-1.5 px-4"
               render={<Link href="/dashboard/pos" />}
+              nativeButton={false}
             >
               <HugeiconsIcon icon={ShoppingBasket01Icon} size={14} />
               Start selling
