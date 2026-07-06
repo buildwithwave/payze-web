@@ -16,7 +16,7 @@ export interface Product {
 
 export type ProductInput = Omit<Product, "id" | "createdAt" | "updatedAt">;
 
-export type PaymentMethod = "cash" | "transfer" | "card";
+export type PaymentMethod = "cash" | "nomba";
 
 export interface InvoiceItem {
   productId: string | null;

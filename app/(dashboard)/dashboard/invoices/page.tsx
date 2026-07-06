@@ -20,8 +20,7 @@ import { formatNaira, formatDateTime } from "@/lib/format";
 
 const paymentLabels: Record<Invoice["paymentMethod"], string> = {
   cash: "Cash",
-  transfer: "Transfer",
-  card: "Card",
+  nomba: "Nomba",
 };
 
 export default function InvoicesPage() {

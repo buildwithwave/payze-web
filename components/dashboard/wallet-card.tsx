@@ -11,7 +11,11 @@ import {
   QrCode01Icon,
   MoneySend01Icon,
 } from "@hugeicons/core-free-icons";
-import { ArrowUpRightIcon, TrendUpIcon, TrendDownIcon } from "@phosphor-icons/react";
+import {
+  ArrowUpRightIcon,
+  TrendUpIcon,
+  TrendDownIcon,
+} from "@phosphor-icons/react";
 import { useWallet, useWalletSummary } from "@/hooks/use-wallet";
 import { WithdrawDialog } from "@/components/dashboard/withdraw-dialog";
 import { formatMoney } from "@/lib/format";
@@ -122,7 +126,7 @@ export function WalletCard() {
           </div>
         </button>
       ) : (
-        <div className="w-full flex items-center justify-between gap-3 rounded-2xl bg-gray-50 px-4 py-3 text-left border border-dashed border-border">
+        <div className="w-full flex items-center justify-between gap-3 rounded-2xl bg-gray-50 px-4 py-3 text-left border border-border">
           <div className="min-w-0">
             <p className="text-sm font-semibold text-foreground truncate animate-pulse">
               Setting up your virtual account...

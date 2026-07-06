@@ -25,8 +25,7 @@ const methods: Array<{
   icon: typeof Cash01Icon;
 }> = [
   { id: "cash", label: "Cash", icon: Cash01Icon },
-  { id: "transfer", label: "Transfer", icon: BankIcon },
-  { id: "card", label: "Card", icon: CreditCardIcon },
+  { id: "nomba", label: "Nomba", icon: CreditCardIcon },
 ];
 
 function quickAmounts(total: number): number[] {
@@ -69,7 +68,7 @@ function PaymentForm({
 
       {/* Method */}
       <div
-        className="mt-4 grid grid-cols-3 gap-2"
+        className="mt-4 grid grid-cols-2 gap-2"
         role="radiogroup"
         aria-label="Payment method"
       >
@@ -146,10 +145,9 @@ function PaymentForm({
         </div>
       )}
 
-      {method === "transfer" && (
+      {method === "nomba" && (
         <p className="mt-4 rounded-lg bg-gray-50 px-3 py-2.5 text-xs text-muted-foreground">
-          Confirm the transfer has landed in your wallet before completing the
-          sale.
+          You will be redirected to Nomba to complete the payment.
         </p>
       )}
 

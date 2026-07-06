@@ -35,7 +35,6 @@ import {
 } from "@/services/catalog";
 import { toast } from "@/components/ui/toast";
 
-
 interface FormErrors {
   name?: string;
   category?: string;
@@ -54,7 +53,9 @@ function fileToThumbnail(file: File): Promise<string> {
       const canvas = document.createElement("canvas");
       canvas.width = Math.round(img.width * scale);
       canvas.height = Math.round(img.height * scale);
-      canvas.getContext("2d")?.drawImage(img, 0, 0, canvas.width, canvas.height);
+      canvas
+        .getContext("2d")
+        ?.drawImage(img, 0, 0, canvas.width, canvas.height);
       URL.revokeObjectURL(url);
       resolve(canvas.toDataURL("image/jpeg", 0.8));
     };
@@ -123,7 +124,6 @@ function ProductFormBody({
     }
     e.target.value = "";
   };
-
 
   const handleSubmit = () => {
     const resolvedCategory = addingCategory ? newCategory.trim() : category;
@@ -196,7 +196,7 @@ function ProductFormBody({
             <button
               type="button"
               onClick={() => fileRef.current?.click()}
-              className="flex size-16 items-center justify-center rounded-xl border border-dashed border-border text-muted-foreground transition-colors outline-none hover:border-foreground/40 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
+              className="flex size-16 items-center justify-center rounded-xl border border-border text-muted-foreground transition-colors outline-none hover:border-foreground/40 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
             >
               <HugeiconsIcon icon={Image01Icon} size={20} strokeWidth={1.5} />
             </button>

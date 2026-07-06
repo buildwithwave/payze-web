@@ -5,8 +5,7 @@ import { formatMoney, formatDateTime } from "@/lib/format";
 
 const paymentLabels: Record<Invoice["paymentMethod"], string> = {
   cash: "Cash",
-  transfer: "Bank transfer",
-  card: "Card",
+  nomba: "Nomba",
 };
 
 export function Receipt({
@@ -38,26 +37,28 @@ export function Receipt({
 
       {invoice.customerName && (
         <p className="mt-3 text-xs text-muted-foreground">
-          Customer: <span className="text-foreground">{invoice.customerName}</span>
+          Customer:{" "}
+          <span className="text-foreground">{invoice.customerName}</span>
         </p>
       )}
 
       {/* Items */}
-      <div className="mt-4 border-t border-dashed border-border pt-3">
+      <div className="mt-4 border-t border-border pt-3">
         <ul className="space-y-2">
           {invoice.items.map((item) => (
-            <li key={item.productId} className="flex items-start justify-between gap-3">
+            <li
+              key={item.productId}
+              className="flex items-start justify-between gap-3"
+            >
               <div className="min-w-0">
-                <p className="truncate font-medium text-foreground">{item.name}</p>
-                <p
-                  className="text-xs text-muted-foreground"
-                >
+                <p className="truncate font-medium text-foreground">
+                  {item.name}
+                </p>
+                <p className="text-xs text-muted-foreground">
                   {item.quantity} × ₦{formatMoney(item.price)}
                 </p>
               </div>
-              <p
-                className="shrink-0 font-medium"
-              >
+              <p className="shrink-0 font-medium">
                 ₦{formatMoney(item.price * item.quantity)}
               </p>
             </li>
@@ -66,9 +67,7 @@ export function Receipt({
       </div>
 
       {/* Totals */}
-      <div
-        className="mt-4 space-y-1.5 border-t border-dashed border-border pt-3"
-      >
+      <div className="mt-4 space-y-1.5 border-t border-border pt-3">
         <div className="flex justify-between text-xs text-muted-foreground">
           <span className="font-sans">Subtotal</span>
           <span>₦{formatMoney(invoice.subtotal)}</span>
@@ -84,7 +83,9 @@ export function Receipt({
           <span>₦{formatMoney(invoice.total)}</span>
         </div>
         <div className="flex justify-between text-xs text-muted-foreground">
-          <span className="font-sans">Paid via {paymentLabels[invoice.paymentMethod]}</span>
+          <span className="font-sans">
+            Paid via {paymentLabels[invoice.paymentMethod]}
+          </span>
           {invoice.amountTendered !== undefined && (
             <span>₦{formatMoney(invoice.amountTendered)}</span>
           )}
