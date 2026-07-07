@@ -16,6 +16,7 @@ import {
   ArrowUpRightIcon,
   TrendUpIcon,
   TrendDownIcon,
+  WhatsappLogoIcon,
 } from "@phosphor-icons/react";
 import { useWallet, useWalletSummary } from "@/hooks/use-wallet";
 import { useStore } from "@/lib/store-context";
@@ -204,11 +205,7 @@ export function WalletCard() {
       >
         <div className="flex w-full justify-between items-start">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-200/60">
-            <HugeiconsIcon
-              icon={QrCode01Icon}
-              size={20}
-              className="text-gray-700"
-            />
+            <WhatsappLogoIcon size={20} className="text-[#075E54]" />
           </div>
         </div>
         <div>
