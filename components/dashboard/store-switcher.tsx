@@ -24,6 +24,7 @@ function initials(name: string) {
 export function StoreSwitcher() {
   const { stores, activeStore, setActiveStoreId, createStore, isLoading } = useStore();
   const { data: user } = useUser();
+  const [isMounted, setIsMounted] = useState(false);
   const [open, setOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
   const [newStoreName, setNewStoreName] = useState("");
@@ -35,6 +36,7 @@ export function StoreSwitcher() {
 
 
   useEffect(() => {
+    setIsMounted(true);
     function handleClick(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) {
         setOpen(false);
@@ -79,7 +81,7 @@ export function StoreSwitcher() {
     setCreateOpen(false);
   };
 
-  if (isLoading) {
+  if (!isMounted || isLoading) {
     return (
       <div className="mx-1 mb-4 flex items-center gap-3 px-2.5 py-2 animate-pulse">
         <div className="h-8 w-8 rounded-full bg-gray-200" />
