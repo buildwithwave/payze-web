@@ -235,7 +235,10 @@ export function WalletCard() {
           </p>
         </button>
 
-        <button className="flex h-full flex-col justify-between rounded-4xl bg-gray-50 p-5 text-left transition-colors hover:bg-gray-100 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 cursor-pointer">
+        <button
+          onClick={() => setWithdrawOpen(true)}
+          className="flex h-full flex-col justify-between rounded-4xl bg-gray-50 p-5 text-left transition-colors hover:bg-gray-100 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 cursor-pointer"
+        >
           <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
             <ArrowUpRightIcon size={24} className="text-gray-700" />
           </div>

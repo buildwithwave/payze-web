@@ -6,17 +6,21 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
+  Combobox,
+  ComboboxInputGroup,
+  ComboboxInput,
+  ComboboxClear,
+  ComboboxContent,
+  ComboboxList,
+  ComboboxEmpty,
+  ComboboxItem,
+} from "@/components/ui/combobox";
 import { useBanks, useResolveAccount, useWithdraw } from "@/hooks/use-wallet";
 import { toast } from "@/components/ui/toast";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Cancel01Icon, Tick01Icon } from "@hugeicons/core-free-icons";
 import { AxiosError } from "axios";
+import type { Bank } from "@/services/wallet";
 
 interface WithdrawDialogProps {
   open: boolean;
@@ -37,11 +41,11 @@ export function WithdrawDialog({ open, onOpenChange, availableBalance }: Withdra
   const withdraw = useWithdraw();
 
   const [amount, setAmount] = useState("");
-  const [bankCode, setBankCode] = useState("");
+  const [selectedBank, setSelectedBank] = useState<Bank | null>(null);
   const [accountNumber, setAccountNumber] = useState("");
   const [resolvedName, setResolvedName] = useState<string | null>(null);
   const [resolveError, setResolveError] = useState<string | null>(null);
-  const selectedBank = banks.find((bank) => bank.code === bankCode);
+  const bankCode = selectedBank?.code ?? "";
 
   // Trigger name enquiry when bank is selected and account number is 10 digits
   useEffect(() => {
@@ -62,7 +66,7 @@ export function WithdrawDialog({ open, onOpenChange, availableBalance }: Withdra
 
   const resetForm = () => {
     setAmount("");
-    setBankCode("");
+    setSelectedBank(null);
     setAccountNumber("");
     setResolvedName(null);
     setResolveError(null);
@@ -73,8 +77,8 @@ export function WithdrawDialog({ open, onOpenChange, availableBalance }: Withdra
     onOpenChange(nextOpen);
   };
 
-  const handleBankChange = (value: string | null) => {
-    setBankCode(value || "");
+  const handleBankChange = (bank: Bank | null) => {
+    setSelectedBank(bank);
     setResolvedName(null);
     setResolveError(null);
   };
@@ -154,22 +158,27 @@ export function WithdrawDialog({ open, onOpenChange, availableBalance }: Withdra
             {loadingBanks ? (
               <div className="h-9 w-full rounded border bg-gray-50 animate-pulse" />
             ) : (
-              <Select value={bankCode} onValueChange={handleBankChange}>
-                <SelectTrigger id="withdraw-bank" className="h-9 text-left">
-                  {selectedBank ? (
-                    <span className="truncate">{selectedBank.name}</span>
-                  ) : (
-                    <SelectValue placeholder="Select bank" />
-                  )}
-                </SelectTrigger>
-                <SelectContent className="max-h-60 overflow-y-auto">
-                  {banks.map((bank) => (
-                    <SelectItem key={bank.code} value={bank.code}>
-                      {bank.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Combobox
+                items={banks}
+                value={selectedBank}
+                onValueChange={handleBankChange}
+                itemToStringLabel={(bank: Bank) => bank.name}
+              >
+                <ComboboxInputGroup>
+                  <ComboboxInput id="withdraw-bank" placeholder="Search bank..." />
+                  <ComboboxClear />
+                </ComboboxInputGroup>
+                <ComboboxContent className="max-h-60 overflow-y-auto">
+                  <ComboboxEmpty>No banks found</ComboboxEmpty>
+                  <ComboboxList>
+                    {(bank: Bank) => (
+                      <ComboboxItem key={bank.code} value={bank}>
+                        {bank.name}
+                      </ComboboxItem>
+                    )}
+                  </ComboboxList>
+                </ComboboxContent>
+              </Combobox>
             )}
           </div>
 
