@@ -11,7 +11,7 @@ export function PaymentSuccessLottie() {
 
   useEffect(() => {
     if (shouldReduceMotion) {
-      lottieRef.current?.goToAndStop(72, true);
+      lottieRef.current?.goToAndStop(99, true);
     }
   }, [shouldReduceMotion]);
 
