@@ -1,15 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useStore } from "@/lib/store-context";
 import { walletService } from "@/services/wallet";
-import { toast } from "@/components/ui/toast";
-import { AxiosError } from "axios";
-
-function getErrorMessage(error: unknown): string {
-  if (error instanceof AxiosError) {
-    return error.response?.data?.message || error.response?.data?.error || error.message;
-  }
-  return error instanceof Error ? error.message : "Something went wrong";
-}
 
 export function useWallet() {
   const { activeStoreId } = useStore();
@@ -60,15 +51,11 @@ export function useWithdraw() {
       bankCode: string;
       accountNumber: string;
     }) => walletService.withdraw(activeStoreId!, amount, bankCode, accountNumber),
-    onSuccess: (tx) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["wallet", activeStoreId] });
       queryClient.invalidateQueries({ queryKey: ["wallet-summary", activeStoreId] });
       queryClient.invalidateQueries({ queryKey: ["transactions", activeStoreId] });
       queryClient.invalidateQueries({ queryKey: ["metrics-overview", activeStoreId] });
-      toast.success("Transfer successful", `Withdrew ₦${tx.amount.toLocaleString()} successfully`);
-    },
-    onError: (error) => {
-      toast.error("Withdrawal failed", getErrorMessage(error));
     },
   });
 }
