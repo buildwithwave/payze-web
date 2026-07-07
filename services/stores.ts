@@ -4,6 +4,7 @@ export interface Store {
   id: string;
   name: string;
   createdAt: string;
+  storeCode?: string;
 }
 
 type StoresResponse = Store[] | { data?: Store[]; stores?: Store[] };

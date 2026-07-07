@@ -18,15 +18,18 @@ import {
   TrendDownIcon,
 } from "@phosphor-icons/react";
 import { useWallet, useWalletSummary } from "@/hooks/use-wallet";
+import { useStore } from "@/lib/store-context";
 import { WithdrawDialog } from "@/components/dashboard/withdraw-dialog";
 import { formatMoney } from "@/lib/format";
 import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "@/components/ui/toast";
 
 export function WalletCard() {
   const router = useRouter();
   const [visible, setVisible] = useState(true);
   const [copied, setCopied] = useState(false);
   const [withdrawOpen, setWithdrawOpen] = useState(false);
+  const { activeStore } = useStore();
 
   const { data: wallet, isLoading: loadingWallet } = useWallet();
   const { data: summary, isLoading: loadingSummary } = useWalletSummary("week");
@@ -190,7 +193,35 @@ export function WalletCard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 h-96 mt-10">
+      <button
+        onClick={() => {
+          if (activeStore?.storeCode) {
+            navigator.clipboard.writeText(activeStore.storeCode);
+            toast.success("Store code copied!");
+          }
+        }}
+        className="w-full mt-12 flex h-40 flex-col justify-between rounded-4xl bg-gray-50 p-5 text-left transition-colors hover:bg-gray-100 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 cursor-pointer outline-none"
+      >
+        <div className="flex w-full justify-between items-start">
+          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-200/60">
+            <HugeiconsIcon
+              icon={QrCode01Icon}
+              size={24}
+              className="text-gray-700"
+            />
+          </div>
+        </div>
+        <div>
+          <p className="text-xs ml-2 text-muted-foreground">
+            WhatsApp Store Code
+          </p>
+          <p className="text-lg ml-2 font-semibold tracking-tight text-foreground">
+            {activeStore?.storeCode || "Loading..."}
+          </p>
+        </div>
+      </button>
+
+      <div className="grid grid-cols-2 gap-4 h-96 mt-4">
         <button
           onClick={() => router.push("/dashboard/pos")}
           className="flex h-full flex-col justify-between rounded-4xl bg-blue-600 p-5 text-left transition-colors hover:bg-blue-700 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 cursor-pointer"
