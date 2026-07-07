@@ -190,7 +190,7 @@ export function WalletCard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-4 h-80 mt-10">
+      <div className="grid grid-cols-2 gap-4 h-96 mt-10">
         <button
           onClick={() => router.push("/dashboard/pos")}
           className="flex h-full flex-col justify-between rounded-4xl bg-blue-600 p-5 text-left transition-colors hover:bg-blue-700 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 cursor-pointer"
@@ -213,22 +213,6 @@ export function WalletCard() {
           </div>
           <p className="text-lg ml-2 font-semibold tracking-tight text-foreground">
             Send
-          </p>
-        </button>
-
-        <button
-          onClick={() => setWithdrawOpen(true)}
-          className="flex h-full flex-col justify-between rounded-4xl bg-gray-50 p-5 text-left transition-colors hover:bg-gray-100 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 cursor-pointer"
-        >
-          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
-            <HugeiconsIcon
-              icon={MoneySend01Icon}
-              size={24}
-              className="text-gray-700"
-            />
-          </div>
-          <p className="text-lg ml-2 font-semibold tracking-tight text-foreground">
-            Withdraw
           </p>
         </button>
       </div>
