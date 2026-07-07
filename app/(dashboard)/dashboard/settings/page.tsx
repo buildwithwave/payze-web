@@ -79,10 +79,29 @@ export default function SettingsPage() {
 
   if (isLoading) {
     return (
-      <div className="p-8 space-y-6">
-        <Skeleton className="h-6 w-32 rounded" />
-        <Skeleton className="h-10 w-96 rounded-lg" />
-        <Skeleton className="h-64 w-full rounded-2xl" />
+      <div className="p-8" role="status" aria-label="Loading settings">
+        {/* Header */}
+        <div className="space-y-2">
+          <Skeleton className="h-6 w-24 rounded" />
+          <Skeleton className="h-4 w-72 rounded" />
+        </div>
+
+        {/* Tabs */}
+        <div className="mt-6 flex gap-2 border-b border-border pb-2">
+          <Skeleton className="h-5 w-28 rounded" />
+          <Skeleton className="h-5 w-36 rounded" />
+        </div>
+
+        {/* Form fields */}
+        <div className="mt-6 max-w-lg space-y-4">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="space-y-1.5">
+              <Skeleton className="h-3.5 w-24 rounded" />
+              <Skeleton className="h-8 w-full rounded" />
+            </div>
+          ))}
+          <Skeleton className="h-9 w-32 rounded" />
+        </div>
       </div>
     );
   }

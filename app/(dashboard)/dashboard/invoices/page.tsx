@@ -208,7 +208,7 @@ export default function InvoicesPage() {
       <ReceiptDialog
         invoice={viewing}
         storeName={user?.businessName}
-        newSaleLabel="Done"
+        variant="view"
         onClose={() => setViewing(null)}
       />
     </div>

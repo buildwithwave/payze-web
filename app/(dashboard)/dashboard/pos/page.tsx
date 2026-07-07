@@ -295,10 +295,28 @@ export default function PosPage() {
         {/* Grid */}
         <div className="flex-1 overflow-y-auto px-6 pb-6">
           {isLoading ? (
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <Skeleton key={i} className="h-32 rounded-xl" />
-              ))}
+            <div
+              className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4"
+              role="status"
+              aria-label="Loading products"
+            >
+              {["w-3/4", "w-1/2", "w-2/3", "w-3/4", "w-1/2", "w-3/4", "w-2/3", "w-1/2"].map(
+                (nameWidth, i) => (
+                  <div
+                    key={i}
+                    className="flex flex-col items-start gap-3 rounded-xl border border-border p-4"
+                  >
+                    <Skeleton className="size-10 rounded-lg" />
+                    <div className="w-full">
+                      <Skeleton className={`h-3.5 rounded ${nameWidth}`} />
+                      <div className="mt-2 flex items-center justify-between">
+                        <Skeleton className="h-3.5 w-14 rounded" />
+                        <Skeleton className="h-3 w-10 rounded" />
+                      </div>
+                    </div>
+                  </div>
+                ),
+              )}
             </div>
           ) : isError ? (
             <div className="flex flex-col items-start gap-3 rounded-xl border border-destructive/20 bg-destructive/5 p-5">
