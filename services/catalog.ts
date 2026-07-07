@@ -47,6 +47,18 @@ export interface CheckoutPayload {
   customerName?: string;
 }
 
+export interface VerifyPaymentResult {
+  received: true;
+  orderId?: string;
+  orderReference?: string;
+  invoiceId?: string;
+  paymentId?: string;
+  paymentStatus?: string;
+  invoiceStatus?: string;
+  nombaVerified: boolean;
+  completed: boolean;
+}
+
 export interface Paginated<T> {
   data: T[];
   total: number;
@@ -188,5 +200,13 @@ export const catalogService = {
   getPublicStores: async (): Promise<{ id: string; name: string }[]> => {
     const res = await api.get(`/stores/public`);
     return res.data;
-  }
+  },
+
+  verifyNombaPayment: async (orderReference: string): Promise<VerifyPaymentResult> => {
+    // Public endpoint, no auth required — called from the payment-success redirect page.
+    const res = await api.get<VerifyPaymentResult>("/payments/verify", {
+      params: { orderReference },
+    });
+    return res.data;
+  },
 };
