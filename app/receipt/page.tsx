@@ -8,6 +8,7 @@ import {
   Invoice03Icon,
   Store01Icon,
   Alert01Icon,
+  Download01Icon,
 } from "@hugeicons/core-free-icons";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,7 @@ import {
 } from "@/components/ui/select";
 import { catalogService } from "@/services/catalog";
 import { Receipt } from "@/components/pos/receipt";
+import { downloadInvoicePDF } from "@/lib/generate-invoice-pdf";
 import { toast } from "sonner";
 import { Invoice } from "@/services/catalog";
 
@@ -35,6 +37,7 @@ function ReceiptLookupContent() {
   
   const [isLoadingStores, setIsLoadingStores] = useState(true);
   const [isSearching, setIsSearching] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
   const [receipt, setReceipt] = useState<(Invoice & { storeName: string }) | null>(null);
   const [error, setError] = useState("");
 
@@ -93,6 +96,18 @@ function ReceiptLookupContent() {
       }
     } finally {
       setIsSearching(false);
+    }
+  };
+
+  const handleDownload = async () => {
+    if (!receipt) return;
+    setIsDownloading(true);
+    try {
+      await downloadInvoicePDF(receipt, receipt.storeName);
+    } catch {
+      toast.error("Failed to download receipt. Please try again.");
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -169,19 +184,27 @@ function ReceiptLookupContent() {
         ) : (
           <div className="w-full max-w-md animate-in fade-in zoom-in-95 duration-300">
             <div className="mb-4 flex items-center justify-between">
-              <Button 
-                variant="ghost" 
+              <Button
+                variant="ghost"
                 onClick={() => setReceipt(null)}
                 className="text-muted-foreground"
               >
                 &larr; Back to search
               </Button>
+              <Button
+                variant="outline"
+                onClick={handleDownload}
+                loading={isDownloading}
+              >
+                <HugeiconsIcon icon={Download01Icon} size={16} aria-hidden="true" />
+                Download
+              </Button>
             </div>
-            
+
             <div className="overflow-hidden rounded-2xl border border-border bg-white shadow-sm">
-              <Receipt 
-                invoice={receipt} 
-                storeName={receipt.storeName} 
+              <Receipt
+                invoice={receipt}
+                storeName={receipt.storeName}
               />
             </div>
           </div>

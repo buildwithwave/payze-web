@@ -174,7 +174,7 @@ function ErrorState({ onRetry }: { onRetry: () => void }) {
 export function PaymentSuccessContent() {
   const searchParams = useSearchParams();
   const orderReference = searchParams.get("orderReference");
-  const { status, result, retry } = usePaymentVerification(orderReference);
+  const { status, retry } = usePaymentVerification(orderReference);
 
   if (status === "checking") return <CheckingState />;
   if (status === "success") {
