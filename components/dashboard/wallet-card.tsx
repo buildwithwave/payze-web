@@ -200,13 +200,13 @@ export function WalletCard() {
             toast.success("Store code copied!");
           }
         }}
-        className="w-full mt-12 flex h-40 flex-col justify-between rounded-4xl bg-gray-50 p-5 text-left transition-colors hover:bg-gray-100 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 cursor-pointer outline-none"
+        className="w-full mt-12 flex h-44 flex-col justify-between rounded-4xl bg-gray-50 p-5 text-left transition-colors hover:bg-gray-100 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 cursor-pointer outline-none"
       >
         <div className="flex w-full justify-between items-start">
-          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-200/60">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-200/60">
             <HugeiconsIcon
               icon={QrCode01Icon}
-              size={24}
+              size={20}
               className="text-gray-700"
             />
           </div>
