@@ -95,7 +95,7 @@ export function WalletCard() {
       </div>
 
       {/* Account info — one-tap copy, instant feedback */}
-      {wallet?.accountNumber ? (
+      {/* {wallet?.accountNumber ? (
         <button
           onClick={handleCopy}
           className="w-full flex items-center justify-between gap-3 rounded-2xl bg-gray-50 px-4 py-3 text-left transition-colors hover:bg-gray-100 active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 cursor-pointer"
@@ -130,7 +130,7 @@ export function WalletCard() {
             </p>
           </div>
         </div>
-      )}
+      )} */}
 
       {/* Weekly earnings */}
       <div className="relative mt-6 overflow-hidden rounded-2xl border border-border p-4">
