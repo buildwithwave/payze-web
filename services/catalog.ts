@@ -48,15 +48,8 @@ export interface CheckoutPayload {
 }
 
 export interface VerifyPaymentResult {
-  received: true;
-  orderId?: string;
-  orderReference?: string;
-  invoiceId?: string;
-  paymentId?: string;
-  paymentStatus?: string;
-  invoiceStatus?: string;
-  nombaVerified: boolean;
-  completed: boolean;
+  status: "success" | "pending";
+  message: string;
 }
 
 export interface Paginated<T> {
@@ -165,7 +158,11 @@ export const catalogService = {
     return res.data;
   },
 
-  createNombaCheckout: async (storeId: string, payload: CheckoutPayload): Promise<{ invoiceId: string, checkoutLink: string, orderReference: string }> => {
+  createNombaCheckout: async (storeId: string, payload: CheckoutPayload): Promise<{ 
+    invoiceId: string, 
+    orderReference: string,
+    virtualAccount: { accountNumber: string, bankName: string, accountName: string }
+  }> => {
     const items = payload.items.map((item) => ({
       productId: item.productId!,
       quantity: item.quantity,
@@ -202,10 +199,11 @@ export const catalogService = {
     return res.data;
   },
 
-  verifyNombaPayment: async (orderReference: string): Promise<VerifyPaymentResult> => {
-    // Public endpoint, no auth required — called from the payment-success redirect page.
-    const res = await api.get<VerifyPaymentResult>("/payments/verify", {
-      params: { orderReference },
+  verifyNombaPayment: async (invoiceId: string, expectedAmount: number, accountNumber: string): Promise<VerifyPaymentResult> => {
+    const res = await api.post<VerifyPaymentResult>("/payments/verify", {
+      invoiceId,
+      expectedAmount,
+      accountNumber,
     });
     return res.data;
   },

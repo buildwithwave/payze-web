@@ -19,10 +19,11 @@ import { CartPanel, CartItem } from "@/components/pos/cart-panel";
 import { PaymentDialog } from "@/components/pos/payment-dialog";
 import { ReceiptDialog } from "@/components/pos/receipt-dialog";
 import { CameraScannerDialog } from "@/components/pos/camera-scanner-dialog";
+import { TransferDialog } from "@/components/pos/transfer-dialog";
 import { useProducts } from "@/hooks/use-products";
 import { useCheckout, useNombaCheckout } from "@/hooks/use-invoices";
 import { useUser } from "@/hooks/use-auth";
-import { Invoice, PaymentMethod, Product } from "@/services/catalog";
+import { Invoice, PaymentMethod, Product, catalogService } from "@/services/catalog";
 import { formatMoney } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -39,6 +40,11 @@ export default function PosPage() {
   const [paymentOpen, setPaymentOpen] = useState(false);
   const [scannerOpen, setScannerOpen] = useState(false);
   const [completedInvoice, setCompletedInvoice] = useState<Invoice | null>(null);
+  const [transferDetails, setTransferDetails] = useState<{
+    invoiceId: string;
+    total: number;
+    virtualAccount: { accountNumber: string; bankName: string; accountName: string };
+  } | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
 
   const categories = useMemo(
@@ -59,7 +65,7 @@ export default function PosPage() {
 
   // A USB barcode scanner types anywhere on the page — route those
   // keystrokes into the search box so scans always land.
-  const dialogShowing = paymentOpen || scannerOpen || !!completedInvoice;
+  const dialogShowing = paymentOpen || scannerOpen || !!completedInvoice || !!transferDetails;
   useEffect(() => {
     if (dialogShowing) return;
     function handleKeyDown(e: KeyboardEvent) {
@@ -202,12 +208,12 @@ export default function PosPage() {
       nombaCheckout.mutate(payload, {
         onSuccess: (data) => {
           setPaymentOpen(false);
-          setCart([]);
-          setCustomerName("");
-          setDiscount("");
-          // Open Nomba Checkout Link in a new tab
-          window.open(data.checkoutLink, "_blank");
-          toast.success("Please complete the payment in the new tab");
+          // Instead of opening a link, open the transfer dialog
+          setTransferDetails({
+            invoiceId: data.invoiceId,
+            total: subtotal - Math.min(Number(discount) || 0, subtotal),
+            virtualAccount: data.virtualAccount
+          });
         },
       });
     }
@@ -454,8 +460,26 @@ export default function PosPage() {
         open={paymentOpen}
         onOpenChange={setPaymentOpen}
         total={total}
-        pending={checkout.isPending}
+        pending={checkout.isPending || nombaCheckout.isPending}
         onConfirm={handleConfirmPayment}
+      />
+      <TransferDialog
+        open={!!transferDetails}
+        onOpenChange={(open) => !open && setTransferDetails(null)}
+        total={transferDetails?.total ?? 0}
+        invoiceId={transferDetails?.invoiceId ?? ""}
+        virtualAccount={transferDetails?.virtualAccount ?? null}
+        onSuccess={() => {
+          // When transfer is confirmed, show receipt and clear cart
+          setTransferDetails(null);
+          setCart([]);
+          setCustomerName("");
+          setDiscount("");
+          // Note: The backend already marked it paid and returned completed: true.
+          // We can fetch the invoice to show the receipt, but since we don't return 
+          // the full invoice object from verifyNombaPayment, we can just fetch it:
+          catalogService.getInvoice(transferDetails!.invoiceId).then(inv => setCompletedInvoice(inv));
+        }}
       />
       <ReceiptDialog
         invoice={completedInvoice}

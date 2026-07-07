@@ -25,7 +25,7 @@ const methods: Array<{
   icon: typeof Cash01Icon;
 }> = [
   { id: "cash", label: "Cash", icon: Cash01Icon },
-  { id: "nomba", label: "Nomba", icon: CreditCardIcon },
+  { id: "nomba", label: "Transfer", icon: BankIcon },
 ];
 
 function quickAmounts(total: number): number[] {
@@ -147,7 +147,7 @@ function PaymentForm({
 
       {method === "nomba" && (
         <p className="mt-4 rounded-lg bg-gray-50 px-3 py-2.5 text-xs text-muted-foreground">
-          You will be redirected to Nomba to complete the payment.
+          Generate virtual account details for a direct bank transfer.
         </p>
       )}
 
@@ -160,7 +160,7 @@ function PaymentForm({
           onConfirm(method, method === "cash" ? tenderedNum : undefined)
         }
       >
-        Complete sale
+        {method === "nomba" ? "Get Account Details" : "Complete sale"}
       </Button>
     </>
   );

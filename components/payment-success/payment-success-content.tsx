@@ -178,14 +178,14 @@ export function PaymentSuccessContent() {
 
   if (status === "checking") return <CheckingState />;
   if (status === "success") {
-    return <SuccessState orderReference={result?.orderReference} />;
+    return <SuccessState orderReference={orderReference ?? undefined} />;
   }
   if (status === "error") return <ErrorState onRetry={retry} />;
 
   // "not-confirmed" and "no-reference" share the same terminal, non-panicked state.
   return (
     <NotConfirmedState
-      orderReference={orderReference ?? result?.orderReference ?? null}
+      orderReference={orderReference}
       onRetry={retry}
     />
   );

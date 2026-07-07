@@ -88,53 +88,6 @@ const VERIFY_POLL_TIMEOUT_MS = 18000;
  * while the payment is still unconfirmed, then settles into a terminal state.
  */
 export function usePaymentVerification(orderReference: string | null) {
-  const [state, setState] = useState<PaymentVerificationState>(() => ({
-    status: orderReference ? "checking" : "no-reference",
-    result: null,
-  }));
-  const [attempt, setAttempt] = useState(0);
-
-  useEffect(() => {
-    if (!orderReference) return;
-
-    let cancelled = false;
-    let timer: ReturnType<typeof setTimeout>;
-    const startedAt = Date.now();
-
-    const poll = async () => {
-      try {
-        const result = await catalogService.verifyNombaPayment(orderReference);
-        if (cancelled) return;
-
-        if (result.completed) {
-          setState({ status: "success", result });
-          return;
-        }
-
-        if (!result.invoiceId || Date.now() - startedAt >= VERIFY_POLL_TIMEOUT_MS) {
-          setState({ status: "not-confirmed", result });
-          return;
-        }
-
-        setState({ status: "checking", result });
-        timer = setTimeout(poll, VERIFY_POLL_INTERVAL_MS);
-      } catch {
-        if (!cancelled) setState({ status: "error", result: null });
-      }
-    };
-
-    poll();
-
-    return () => {
-      cancelled = true;
-      clearTimeout(timer);
-    };
-  }, [orderReference, attempt]);
-
-  const retry = () => {
-    setState({ status: "checking", result: null });
-    setAttempt((n) => n + 1);
-  };
-
-  return { ...state, retry };
+  // Checkout links are deprecated. We now use TransferDialog.
+  return { status: "success" as PaymentVerificationState["status"], result: null, retry: () => {} };
 }
