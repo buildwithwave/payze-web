@@ -1,6 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Copy01Icon, Tick01Icon } from "@hugeicons/core-free-icons";
 import { useTransactions } from "@/hooks/use-wallet";
 import { formatNaira, formatDateTime } from "@/lib/format";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -22,7 +24,14 @@ const statusColors: Record<string, string> = {
 export default function PaymentsPage() {
   const [filter, setFilter] = useState<"all" | "credit" | "debit">("all");
   const [page, setPage] = useState(1);
+  const [copiedRef, setCopiedRef] = useState<string | null>(null);
   const limit = 15;
+
+  const handleCopyReference = (reference: string) => {
+    navigator.clipboard.writeText(reference);
+    setCopiedRef(reference);
+    setTimeout(() => setCopiedRef((current) => (current === reference ? null : current)), 1500);
+  };
 
   const typeParam = filter === "all" ? undefined : filter;
   const {
@@ -141,8 +150,23 @@ export default function PaymentsPage() {
                       key={tx.id}
                       className="border-b border-border/60 last:border-0 transition-colors hover:bg-gray-50/50"
                     >
-                      <td className="py-3 pr-4 font-mono text-xs font-medium text-foreground">
-                        {tx.reference}
+                      <td className="py-3 pr-4">
+                        <button
+                          onClick={() => handleCopyReference(tx.reference)}
+                          className="group/copy inline-flex items-center gap-1.5 font-mono text-xs text-foreground outline-none cursor-pointer"
+                        >
+                          {tx.reference}
+                          <HugeiconsIcon
+                            icon={copiedRef === tx.reference ? Tick01Icon : Copy01Icon}
+                            size={12}
+                            className={cn(
+                              "shrink-0 transition-colors",
+                              copiedRef === tx.reference
+                                ? "text-emerald-600"
+                                : "text-muted-foreground/50 group-hover/copy:text-muted-foreground",
+                            )}
+                          />
+                        </button>
                       </td>
                       <td className="px-4 py-3 text-muted-foreground">
                         {formatDateTime(tx.createdAt)}
