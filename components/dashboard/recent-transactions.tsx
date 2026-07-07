@@ -1,8 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { MoneySend01Icon } from "@hugeicons/core-free-icons";
 import { ArrowUpRightIcon, ArrowDownLeftIcon } from "@phosphor-icons/react";
 import { useTransactions } from "@/hooks/use-wallet";
 import { formatMoney, formatDateTime } from "@/lib/format";
@@ -14,22 +12,11 @@ const rowStyles = {
   debit: { iconColor: "text-gray-700", amountColor: "text-foreground" },
 } as const;
 
-function TransactionIcon({
-  type,
-  channel,
-}: {
-  type: "credit" | "debit";
-  channel: string;
-}) {
+function TransactionIcon({ type }: { type: "credit" | "debit" }) {
   const { iconColor } = rowStyles[type];
 
   if (type === "credit") {
     return <ArrowDownLeftIcon size={17} weight="bold" className={iconColor} />;
-  }
-  if (channel === "withdrawal") {
-    return (
-      <HugeiconsIcon icon={MoneySend01Icon} size={17} className={iconColor} />
-    );
   }
   return <ArrowUpRightIcon size={17} weight="bold" className={iconColor} />;
 }
@@ -118,7 +105,7 @@ export function RecentTransactions() {
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white shadow-sm shadow-black/[0.03]">
-                    <TransactionIcon type={tx.type} channel={tx.channel} />
+                    <TransactionIcon type={tx.type} />
                   </div>
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-foreground truncate">
