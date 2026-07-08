@@ -17,9 +17,10 @@ As a merchant, the dashboard is your control center.
 Customers can skip the queue by scanning and paying for their items directly on WhatsApp.
 
 **How to test the WhatsApp Bot:**
-1. Save the Payze WhatsApp Bot number to your phone: **`+1 415-523-8886`** (or click [here](https://wa.me/14155238886) to open WhatsApp directly).
-2. Send **`Hello`** (or any message) to start the self-service flow.
-3. **Connect to your Store:** The bot will ask for a store code. Send the **Store Code** of the store you created in the merchant dashboard.
+1. Join the Twilio Sandbox by sending **`join wrapped-detail`** to the Payze WhatsApp Bot number: **`+1 415-523-8886`**. 
+   *(Pro-tip: You can click the "WhatsApp Store Code" button on your dashboard to automatically copy your store code and open WhatsApp with this join message pre-filled!)*
+2. Once connected to the sandbox, send **`Hello`** (or any message) to start the self-service flow.
+3. **Connect to your Store:** The bot will ask for a store code. Paste and send the **Store Code** of the store you created in the merchant dashboard.
 4. **Scan Items:** 
    - You can send a clear **photo of a product barcode**.
    - Alternatively, type the **barcode number** or the **product name** (e.g., `Peak Milk`).

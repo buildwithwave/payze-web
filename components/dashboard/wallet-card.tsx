@@ -198,7 +198,8 @@ export function WalletCard() {
         onClick={() => {
           if (activeStore?.storeCode) {
             navigator.clipboard.writeText(activeStore.storeCode);
-            toast.success("Store code copied!");
+            toast.success("Store code copied! Redirecting to WhatsApp...");
+            window.open('https://wa.me/14155238886?text=join%20wrapped-detail', '_blank');
           }
         }}
         className="w-full mt-12 flex h-44 flex-col justify-between rounded-4xl bg-gray-50 p-5 text-left transition-colors hover:bg-gray-100 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 cursor-pointer outline-none"
