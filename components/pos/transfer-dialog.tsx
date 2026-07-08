@@ -11,7 +11,7 @@ import { formatMoney } from "@/lib/format";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { CopyIcon } from "@hugeicons/core-free-icons";
 import { toast } from "@/components/ui/toast";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { catalogService } from "@/services/catalog";
 import { useQueryClient } from "@tanstack/react-query";
 import { useStore } from "@/lib/store-context";
@@ -40,6 +40,54 @@ export function TransferDialog({
   const [checking, setChecking] = useState(false);
   const queryClient = useQueryClient();
   const { activeStoreId } = useStore();
+  const pollInterval = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (!open || !virtualAccount) {
+      if (pollInterval.current) {
+        clearInterval(pollInterval.current);
+        pollInterval.current = null;
+      }
+      return;
+    }
+
+    // Auto-detect payment by polling the backend (which checks the DB status updated by the webhook)
+    pollInterval.current = setInterval(async () => {
+      try {
+        const res = await catalogService.verifyNombaPayment(
+          invoiceId,
+          total,
+          virtualAccount.accountNumber,
+        );
+        if (res.status === "success") {
+          if (pollInterval.current) {
+            clearInterval(pollInterval.current);
+            pollInterval.current = null;
+          }
+          toast.success("Transfer confirmed automatically!", "Payment received successfully.");
+
+          queryClient.invalidateQueries({ queryKey: ["invoices", activeStoreId] });
+          queryClient.invalidateQueries({ queryKey: ["products", activeStoreId] });
+          queryClient.invalidateQueries({ queryKey: ["wallet", activeStoreId] });
+          queryClient.invalidateQueries({ queryKey: ["wallet-summary", activeStoreId] });
+          queryClient.invalidateQueries({ queryKey: ["metrics-overview", activeStoreId] });
+          queryClient.invalidateQueries({ queryKey: ["sales-trend", activeStoreId] });
+          queryClient.invalidateQueries({ queryKey: ["transactions", activeStoreId] });
+
+          onSuccess();
+        }
+      } catch (err) {
+        // Silently fail on background poll errors
+      }
+    }, 4000);
+
+    return () => {
+      if (pollInterval.current) {
+        clearInterval(pollInterval.current);
+        pollInterval.current = null;
+      }
+    };
+  }, [open, invoiceId, total, virtualAccount, activeStoreId, queryClient, onSuccess]);
 
   const copyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
@@ -173,13 +221,17 @@ export function TransferDialog({
             </div>
 
             <Button
-              className="w-full h-11"
+              className="w-full h-11 relative overflow-hidden"
               size="lg"
               loading={checking}
               onClick={handleVerify}
             >
+              <div className="absolute inset-0 bg-white/20 translate-x-[-100%] animate-[shimmer_2.5s_infinite]" />
               I have sent the money
             </Button>
+            <p className="text-center text-xs text-muted-foreground pt-1">
+              {checking ? "Checking..." : "We are automatically checking for your payment..."}
+            </p>
           </div>
         )}
       </DialogContent>
