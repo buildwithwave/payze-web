@@ -61,24 +61,27 @@ export default function LoginPage() {
             </Link>
           </div>
 
-          <Button
-            type="submit"
-            className="w-full"
-            loading={login.isPending}
-          >
+          <Button type="submit" className="w-full" loading={login.isPending}>
             Log in
           </Button>
         </form>
 
         <p className="text-sm text-center text-muted-foreground leading-relaxed">
           By continuing, you agree to our{" "}
-          <Link href="/terms" className="underline hover:text-foreground transition-colors">
+          <Link
+            href="/terms"
+            className="underline hover:text-foreground transition-colors"
+          >
             Terms of Service
           </Link>{" "}
           and{" "}
-          <Link href="/privacy" className="underline hover:text-foreground transition-colors">
+          <Link
+            href="/privacy"
+            className="underline hover:text-foreground transition-colors"
+          >
             Privacy Policy
-          </Link>.
+          </Link>
+          .
         </p>
       </div>
     </div>

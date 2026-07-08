@@ -1,5 +1,9 @@
 # Payze
 
+**Demo Account**
+Email: `nomba@usepayze.xyz`
+Password: `Nombapass!1`
+
 Payze is a modern point-of-sale (POS) and inventory management platform designed to streamline operations for businesses. It empowers merchants with an intuitive dashboard, seamless catalogue management, real-time metrics, and an innovative WhatsApp-based self-checkout experience for their customers.
 
 ## 🚀 Quick Start for Reviewers
